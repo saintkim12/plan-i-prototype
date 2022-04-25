@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import logo from './logo.svg'
-import './App.css'
+import './App.scss'
+import { Link } from 'react-router-dom'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -36,6 +37,10 @@ function App() {
           >
             Vite Docs
           </a>
+          {' | '}
+          <Link to="/a">PageA</Link>
+          {' | '}
+          <Link to="/b">PageB</Link>
         </p>
       </header>
     </div>
