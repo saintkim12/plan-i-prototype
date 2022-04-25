@@ -1,49 +1,40 @@
-import { useState } from 'react'
-import logo from './logo.svg'
 import './App.scss'
-import { Link } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import Main from '/src/routes/Main'
+
+
+function PageA() {
+  return (
+    <div>
+      PageA
+    </div>
+  )
+}
+function PageB() {
+  return (
+    <div>
+      PageB
+    </div>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-          {' | '}
-          <Link to="/a">PageA</Link>
-          {' | '}
-          <Link to="/b">PageB</Link>
-        </p>
-      </header>
-    </div>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/a" element={<PageA />} />
+        <Route path="/b" element={<PageB />} />
+        <Route
+          path="*"
+          element={
+            <main style={{ padding: "1rem" }}>
+              <p>There's nothing here!</p>
+            </main>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
