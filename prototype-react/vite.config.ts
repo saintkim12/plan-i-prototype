@@ -13,11 +13,6 @@ export default defineConfig((env: ConfigEnv) => ({
   base: env.command === 'build' ? '/plan-i-prototype/' : '/',
   build: {
     outDir: '../docs/',
-    rollupOptions: {
-      input: {
-        index: resolve(__dirname, 'index.html'),
-        '404': resolve(__dirname, '404.html'),
-      }
-    }
+    emptyOutDir: true,
   }
 }))
