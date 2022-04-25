@@ -1,4 +1,4 @@
-import { createRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function MessageBox() {
   const user = 'me'
@@ -7,8 +7,9 @@ export default function MessageBox() {
     { timestamp: Date.now() - 1000, sender: 'who', msg: 'hello' },
     { timestamp: Date.now(), sender: 'me', msg: 'hello' },
   ])
-  const msgLogBox = createRef<HTMLDivElement>()
+  const msgLogBox = useRef<HTMLDivElement>(null)
   const addMessage = () => {
+    if (!msg) return
     setMessageLog(msgLog.concat({ timestamp: Date.now(), sender: user, msg }))
     setMessage('')
     msgLogBox.current?.scrollTo({ top: msgLogBox.current.scrollHeight })
@@ -26,7 +27,9 @@ export default function MessageBox() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <textarea style={{ flexGrow: 1 }} rows={10} value={msg} onChange={(e) => setMessage(e.target.value)}></textarea>
+        <textarea style={{ flexGrow: 1 }} rows={10} value={msg} onChange={(e) => setMessage(e.target.value)}
+         onKeyDown={(e) => e.key === 'Enter' && !e.ctrlKey && (() => { e.preventDefault(); addMessage(); })()}
+        ></textarea>
         <button type="button" onClick={addMessage}>보내기</button>
       </div>
     </div>
