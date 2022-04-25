@@ -1,6 +1,8 @@
 import './App.scss'
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Main from '/src/routes/Main'
+import Schedule from '/src/routes/Schedule'
+import Chat from '/src/routes/Chat'
 
 
 function PageA() {
@@ -25,6 +27,8 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/a" element={<PageA />} />
         <Route path="/b" element={<PageB />} />
+        <Route path="/schedule" element={<Schedule />} />
+        <Route path="/chat" element={<Chat />} />
         <Route
           path="*"
           element={
