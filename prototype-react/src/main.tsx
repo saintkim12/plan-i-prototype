@@ -27,14 +27,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<App />} />
         <Route path="/a" element={<PageA />} />
         <Route path="/b" element={<PageB />} />
-        <Route
+        {/* <Route
           path="*"
           element={
             <main style={{ padding: "1rem" }}>
               <p>There's nothing here!</p>
             </main>
           }
-        />
+        /> */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
