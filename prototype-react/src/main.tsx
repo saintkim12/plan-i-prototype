@@ -20,21 +20,22 @@ function PageB() {
   )
 }
 
+console.log('import.meta.env.BASE_URL', import.meta.env.BASE_URL)
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/a" element={<PageA />} />
         <Route path="/b" element={<PageB />} />
-        {/* <Route
+        <Route
           path="*"
           element={
             <main style={{ padding: "1rem" }}>
               <p>There's nothing here!</p>
             </main>
           }
-        /> */}
+        />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
