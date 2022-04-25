@@ -20,7 +20,7 @@ function PageB() {
   )
 }
 
-console.log('import.meta.env.BASE_URL', import.meta.env.BASE_URL)
+console.log(`${'import'}.meta.env.BASE_URL`, import.meta.env.BASE_URL)
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>
