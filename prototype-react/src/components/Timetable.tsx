@@ -4,10 +4,7 @@ import { Calendar, EventInput } from '@fullcalendar/core'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import flow from 'lodash/fp/flow'
-import pick from 'lodash/fp/pick'
-import sortedUniq from 'lodash/fp/sortedUniq'
-import uniq from 'lodash/fp/uniq'
+import { flow, pick, sortedUniq, uniq } from 'lodash/fp'
 import { DateTime } from 'luxon'
 
 
@@ -67,8 +64,8 @@ export default function Timetable({ eventList }: { eventList: any[] }) {
     return times
   }, [eventList])
   useEffect(() => {
-    console.log('useEffect', calendarRef.current)
-    if (!calendarRef.current && calendarWrapRef.current) {
+    // if (!calendarRef.current && calendarWrapRef.current) {
+    if (calendarWrapRef.current) {
       const $calendar = new Calendar(calendarWrapRef.current, {
         locale: 'ko-KR',
         plugins: [timeGridPlugin, listPlugin],
