@@ -14,5 +14,19 @@ export default defineConfig((env: ConfigEnv) => ({
   build: {
     outDir: '../docs/',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          fullcalendar: [
+            '@fullcalendar/core',
+            '@fullcalendar/timegrid',
+            '@fullcalendar/list',
+          ],
+          lodash: ['lodash'],
+          react: ['react'],
+          luxon: ['luxon'],
+        }
+      },
+    }
   }
 }))

@@ -4,7 +4,10 @@ import { Calendar, EventInput } from '@fullcalendar/core'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { flow, pick, sortedUniq, uniq } from 'lodash/fp'
+import flow from 'lodash/fp/flow'
+import pick from 'lodash/fp/pick'
+import sortedUniq from 'lodash/fp/sortedUniq'
+import uniq from 'lodash/fp/uniq'
 import { DateTime } from 'luxon'
 
 
