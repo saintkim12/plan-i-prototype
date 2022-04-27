@@ -183,9 +183,7 @@ export default function Schedule({ $interviewerList = [] }) {
         <label>access_token: <span>{accessToken ?? 'no token'}</span></label>
       </div>
       <div>
-        <Timetable>
-          {JSON.stringify(eventList)}
-        </Timetable>
+        <Timetable eventList={eventList}></Timetable>
       </div>
     </>
   )
