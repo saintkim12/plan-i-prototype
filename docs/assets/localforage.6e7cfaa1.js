@@ -1,4 +1,4 @@
-import{c as ne,a as te}from"./vendor.3dc33d0f.js";var Fe={exports:{}};/*!
+import{c as ne,a as te}from"./vendor.97d8ec29.js";var Fe={exports:{}};/*!
     localForage -- Offline Storage, Improved
     Version 1.10.0
     https://localforage.github.io/localForage
