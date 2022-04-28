@@ -1,7 +1,23 @@
 import localForage from 'localforage'
 import flow from 'lodash/fp/flow'
+import { DateTime } from 'luxon'
 import { useEffect, useMemo, useState } from 'react'
 import Timetable from '/src/components/Timetable'
+
+type GoogleCalendarEventTime = { dateTime: string, timeZone: string }
+type GoogleCalendarEventItem = { id: string, summary: string, start: GoogleCalendarEventTime, end: GoogleCalendarEventTime, [key: string]: any }
+type EventItem = { username: string, id: string, title: string, start: string, end: string, }
+interface GoogleOAuth2Token {
+  accessToken: string
+  tokenType: string
+  expiresIn: number
+  scope: string[]
+}
+interface CustomToken {
+  createdIn: number
+}
+type GoogleToken = GoogleOAuth2Token & CustomToken
+
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_API_CLIENT_ID
 const REDIRECT_URI = import.meta.env.VITE_GOOGLE_API_REDIRECT_URI
 const API_KEY = import.meta.env.VITE_GOOGLE_API_API_KEY
@@ -20,7 +36,7 @@ function loginToGoogle() {
   })}`
 }
 
-function getEvents<T extends OAuth2BasedToken>(token: T | null, option?: { username?: string, calendarId?: string, timeZone?: 'Asia/Seoul' | 'Asia/Tokyo', timeMin?: string, timeMax?: string }) {
+function getEvents<T extends GoogleOAuth2Token>(token: T | null, option?: { username?: string, calendarId?: string, timeZone?: 'Asia/Seoul' | 'Asia/Tokyo', timeMin?: string, timeMax?: string }) {
   if (!token) return Promise.resolve([])
   const calendarId = option?.calendarId
   if (!calendarId) return Promise.resolve([])
@@ -69,27 +85,10 @@ function getEvents<T extends OAuth2BasedToken>(token: T | null, option?: { usern
      * timeZone: "Asia/Seoul"
      * updated: "2022-04-26T03:56:04.147Z"
      */
-    type GoogleCalendarEventTime = { dateTime: string, timeZone: string }
-    type GoogleCalendarEventItem = {
-      id: string, summary: string, start: GoogleCalendarEventTime, end: GoogleCalendarEventTime, [key: string]: any
-    }
-    type EventItem = {
-      username: string, id: string, title: string, start: string, end: string
-    }
     // console.log('data', data)
     const items: GoogleCalendarEventItem[] = data?.items ?? []
     return items.map((o: GoogleCalendarEventItem) => ({ username: username, id: o.id, title: o.summary, start: o.start.dateTime, end: o.end.dateTime } as EventItem))
   })
-}
-
-interface OAuth2BasedToken {
-  accessToken: string
-  tokenType: string
-  expiresIn: number
-  scope: string[]
-}
-interface CustomToken {
-  createdIn: number
 }
 
 export default function Schedule({ $interviewerList = [] }) {
@@ -104,11 +103,15 @@ export default function Schedule({ $interviewerList = [] }) {
   }, [$testInterviewInput])
   /** test */
 
-  const [token, setToken] = useState<(OAuth2BasedToken & CustomToken) | null>(null)
+  const [token, setToken] = useState<GoogleToken | null>(null)
   const [timeMin, setTimeMin] = useState('2022-01-01T00:00')
   const [timeMax, setTimeMax] = useState('2022-12-31T23:59')
   const [eventList, setEventList] = useState<any[]>([])
   const accessToken = useMemo(() => token?.accessToken, [token])
+  const isTokenValid = useMemo(() => {
+    return token?.accessToken && token?.createdIn && token?.expiresIn
+      && (DateTime.fromMillis(token.createdIn).plus({ milliseconds: token.expiresIn }).diffNow().toMillis() > 0)
+  }, [token])
 
   function loadEventList() {
     console.log('loadEventList')
@@ -181,6 +184,7 @@ export default function Schedule({ $interviewerList = [] }) {
       </div>
       <div>
         <label>access_token: <span>{accessToken ?? 'no token'}</span></label>
+        <label>isTokenValid: <span>{isTokenValid ? 'true' : 'false'}</span></label>
       </div>
       <div>
         <Timetable eventList={eventList}></Timetable>
