@@ -12,6 +12,7 @@
     "@fullcalendar/daygrid": "^5.11.0",
     "@fullcalendar/list": "^5.11.0",
     "@fullcalendar/timegrid": "^5.11.0",
+    "hangul-search-js": "^1.0.5",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "luxon": "^2.3.2",
