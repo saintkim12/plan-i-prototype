@@ -47,7 +47,7 @@ export default function MessageBox() {
     <div className="message-box">
       <div ref={msgLogBox} style={{ height: '70vh', overflowY: 'auto' }}>
         {msgLog.map(({ sender, msg, timestamp }, key) => (
-          <p key={key} style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '5px', textAlign: sender === USER ? 'right' : 'left' }}>
+          <p key={key} style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '5px', marginTop: '10px', marginBottom: '10px', textAlign: sender === USER ? 'right' : 'left' }}>
             {msg}
             <span style={{ color: '#aaa', fontSize: '.5rem', marginLeft: '2px' }}>{new Date(timestamp).toISOString()}</span>
           </p>
@@ -55,10 +55,10 @@ export default function MessageBox() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <textarea style={{ flexGrow: 1 }} rows={10} value={msg} onChange={(e) => setMessage(e.target.value)}
+        <textarea className="textarea" style={{ flexGrow: 1, maxWidth: 'inherit', minWidth: 'inherit' }} rows={7} value={msg} onChange={(e) => setMessage(e.target.value)}
          onKeyDown={(e) => e.key === 'Enter' && !e.ctrlKey && (() => { e.preventDefault(); addMessage(msg, USER).then(botResponse) })()}
         ></textarea>
-        <button type="button" onClick={() => addMessage(msg, USER).then(botResponse)}>보내기</button>
+        <button type="button" className="button is-dark is-outlined" style={{ height: 'auto' }} onClick={() => addMessage(msg, USER).then(botResponse)}>보내기</button>
       </div>
     </div>
   )

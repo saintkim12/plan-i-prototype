@@ -1,3 +1,4 @@
+import 'bulma'
 import './App.scss'
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Main from '/src/routes/Main'
@@ -5,23 +6,8 @@ import Main from '/src/routes/Main'
 // import Chat from '/src/routes/Chat'
 import { Suspense, lazy } from 'react'
 
-
-function PageA() {
-  return (
-    <div>
-      PageA
-    </div>
-  )
-}
-function PageB() {
-  return (
-    <div>
-      PageB
-    </div>
-  )
-}
-
 function App() {
+  const Login = lazy(() => import('/src/routes/Login'))
   const Schedule = lazy(() => import('/src/routes/Schedule'))
   const Chat = lazy(() => import('/src/routes/Chat'))
   return (
@@ -30,8 +16,7 @@ function App() {
       <Suspense>
         <Routes>
           <Route path="/" element={<Main />} />
-          <Route path="/a" element={<PageA />} />
-          <Route path="/b" element={<PageB />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/chat" element={<Chat />} />
           <Route
