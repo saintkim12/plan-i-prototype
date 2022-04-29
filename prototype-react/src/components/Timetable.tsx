@@ -1,14 +1,51 @@
-import './timetable.scss'
-import '@fullcalendar/core/vdom' /* https://github.com/fullcalendar/fullcalendar-vue/issues/152 */
+// import './timetable.scss'
+// import '@fullcalendar/core/vdom' /* https://github.com/fullcalendar/fullcalendar-vue/issues/152 */
+import '@fullcalendar/react/dist/vdom' /* https://github.com/fullcalendar/fullcalendar-vue/issues/152 */
+import FullCalendar from '@fullcalendar/react' // must go before plugins
 import { Calendar, EventInput } from '@fullcalendar/core'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { flow, pick, sortedUniq, uniq } from 'lodash/fp'
 import { DateTime } from 'luxon'
+import styled from 'styled-components'
 
 
-export default function Timetable({ eventList }: { eventList: any[] }) {
+const FullCalendarWrapper = styled.div`
+  max-height: 500px;
+  & > *:first-child {
+    height: 500px;
+  }
+
+  .plan-item {
+    &, &.fc-v-event {
+      background-color: #ffffff44;
+      border-color: #333;
+      user-select: none;
+      // pointer-events: none;
+      * {
+        color: #888;
+      }
+    }
+    &.is-selected {
+      background-color: #ddd;
+    }
+    &.hidden-item {
+      display: none;
+    }
+  }
+
+  & {
+    // 기본 select css를 제거(eventClick 활성화시 작동)
+    .fc-event-selected:after, .fc-event:focus:after {
+      background: unset;
+    }
+  }
+`
+let selectedTimeList: string[]
+export default function Timetable({ eventList, selectedTimeList: $initSelectedTimeList }: { eventList: any[], selectedTimeList?: string[] }) {
+  const optSelectedTimeList = [...Array.isArray($initSelectedTimeList) ? $initSelectedTimeList : []]
+  if (!selectedTimeList) selectedTimeList = [...optSelectedTimeList]
   const timeMin = '2022-04-21T00:00'
   const timeMax = '2022-05-01T00:00'
   const workWeekdays = [1, 2, 3, 4, 5]
@@ -23,19 +60,25 @@ export default function Timetable({ eventList }: { eventList: any[] }) {
       && (dt.set({ ...pickTimeValue(DateTime.fromISO(`1970-01-01T${workEndTime}`)), second: 0 }).toMillis() > dt.toMillis())
   }
 
-  const calendarWrapRef = useRef<HTMLDivElement>(null)
-  // const [calendar, setCalendar] = useState<Calendar>()
-  const calendarRef = useRef<Calendar | undefined>()
   const users = useMemo<string[]>(() => flow((l: any[]) => l.map(({ username }) => (username as string)), uniq)(eventList), [eventList])
-  const [selectedTimeList, $setSelectedTimeList] = useState<string[]>([])
-  const toggleSelectTime = useCallback((time: string) => {
-    const $selectedTimeList = flow(
-      l => l.findIndex(($time: string) => $time === time) >= 0 ? l.filter(($time: string) => $time !== time) : l.concat(time),
-      l => l.filter((s?: string) => !!s?.trim?.()),
-      sortedUniq,
-    )(selectedTimeList)
-    $setSelectedTimeList($selectedTimeList)
-  }, [selectedTimeList])
+  // const [selectedTimeList, setSelectedTimeList] = useState<string[]>([...optSelectedTimeList])
+  // const [state, setState] = useState<{ selectedTimeList: string[] }>({ selectedTimeList: [...optSelectedTimeList] })
+  // const updateSelectedTimeList = useCallback((insert: boolean, time: string) => {
+  //   const selectedTimeList = sortedUniq(insert ? state.selectedTimeList.concat(time) : state.selectedTimeList.filter($time => $time !== time))
+  // }, [])
+  const updateSelectedTimeList = (insert: boolean, time: string) => {
+    selectedTimeList = sortedUniq(insert ? selectedTimeList.concat(time) : selectedTimeList.filter($time => $time !== time))
+  }
+  //   '2022-04-25T10:00:00.000+09:00'
+  // ])
+  // const toggleSelectTime = useCallback((time: string) => {
+  //   const $selectedTimeList = flow(
+  //     l => l.findIndex(($time: string) => $time === time) >= 0 ? l.filter(($time: string) => $time !== time) : l.concat(time),
+  //     l => l.filter((s?: string) => !!s?.trim?.()),
+  //     sortedUniq,
+  //   )(selectedTimeList)
+  //   $setSelectedTimeList($selectedTimeList)
+  // }, [selectedTimeList])
   const selectableTimeList = useMemo<{ id: string, start: string, end: string, isNotInWorkTime?: boolean }[]>(() => {
     const gapMillis = interviewingMinutes * 60000
     const times = flow(
@@ -63,83 +106,68 @@ export default function Timetable({ eventList }: { eventList: any[] }) {
     console.log('times', times)
     return times
   }, [eventList])
-  useEffect(() => {
-    // if (!calendarRef.current && calendarWrapRef.current) {
-    if (calendarWrapRef.current) {
-      const $calendar = new Calendar(calendarWrapRef.current, {
-        locale: 'ko-KR',
-        plugins: [timeGridPlugin, listPlugin],
-        initialView: 'timeGridWeek',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'timeGridWeek,timeGridDay,listWeek',
-        },
-        businessHours: {
-          startTime: workStartTime, // 8am
-          endTime: workEndTime, // 6pm
-        },
-        events: [
-          // 일정이 있는 시간
-          ...eventList.map(({ username, id, title, start, end }) => ({
-            id,
-            title,
-            start,
-            end,
-          })),
-          // 일정이 없는 시간
-          ...selectableTimeList
-            .map(({ id, start, end, isNotInWorkTime = false }) => ({
-              id,
-              start,
-              end,
-              title: selectedTimeList.includes(id) ? '선택됨' : '이 시간을 선택',
-              classNames: [
-                'plan-item',
-                ...(isNotInWorkTime ? ['hidden-item'] : []),
-                ...(selectedTimeList.includes(id) ? ['is-selected'] : []),
-              ],
-              // textColor: '#888',
-            } as EventInput))
+  const events = [
+    // 일정이 있는 시간
+    ...eventList.map(({ username, id, title, start, end }) => ({
+      id,
+      title,
+      start,
+      end,
+    })),
+    // 일정이 없는 시간
+    ...selectableTimeList
+      .map(({ id, start, end, isNotInWorkTime = false }) => ({
+        id,
+        start,
+        end,
+        title: optSelectedTimeList.includes(id) ? '선택됨' : '이 시간을 선택',
+        // title: '이 시간을 선택',
+        classNames: [
+          'plan-item',
+          ...(isNotInWorkTime ? ['hidden-item'] : []),
+          ...(optSelectedTimeList.includes(id) ? ['is-selected'] : []),
         ],
-        eventClick: ({ jsEvent: e, el, event, ...args }) => {
-          e.preventDefault()
-          
-        //   console.log('args', args)
-          if (el.classList.contains('plan-item')) {
-            // args.view.calendar.unselect()
-            toggleSelectTime(event.id)
-        //     // const toBeSelected = !el.classList.contains('is-selected')
-        //     // console.log('toBeSelected', event.id, toBeSelected)
-        //     // if (toBeSelected) {
-        //     //   el.classList.add('is-selected')
-        //     //   // args.view.title
-        //     // } else {
-        //     //   el.classList.remove('is-selected')
-        //     //   // args.view.calendar.getEventById('').title = ''// fullCalendar = '이 시간을 선택'
-        //     // }
-          }
-        //   //   // window.setTimeout(() => {
-        // //   // }, 1000)
-        },
-        // selectable: false,
-        // select: (args) => {
-        //   args.view.calendar.unselect()
-        //   if (el.classList.contains('plan-item')) {
-        //     args.view.calendar.unselect()
-        //     toggleSelectTime(event.id)
-        //   }
-        // },
-      })
-      $calendar.render()
-      calendarRef.current = $calendar
-      // return () => $calendar.destroy()
-    }
-  }, [calendarWrapRef, eventList])
+        // textColor: '#888',
+      } as EventInput))
+  ]
   return (
     <div>
-      <div>{selectedTimeList.map((s) => <span key={s}>{s}</span>)}</div>
-      <div ref={calendarWrapRef} style={{ maxHeight: '500px' }}></div>
+      {/* <div>{selectedTimeList.map((s) => <span key={s}>{s}</span>)}</div> */}
+      <FullCalendarWrapper>
+        <FullCalendar
+          {...{
+            locale: 'ko-KR',
+            plugins: [timeGridPlugin, listPlugin],
+            initialView: 'timeGridWeek',
+            headerToolbar: {
+              left: 'prev,next today',
+              center: 'title',
+              right: 'timeGridWeek,timeGridDay,listWeek',
+            },
+            businessHours: {
+              startTime: workStartTime, // 8am
+              endTime: workEndTime, // 6pm
+            },
+            events,
+            eventClick: ({ jsEvent: e, el, event, ...args }) => {
+              e.preventDefault()
+              if (el.classList.contains('plan-item')) {
+                // toggleSelectTime(event.id)
+                if (el.classList.contains('is-selected')) {
+                  el.classList.remove('is-selected')
+                  el.querySelector('.fc-event-title.fc-sticky')!.textContent = '이 시간을 선택'
+                  updateSelectedTimeList(false, event.id)
+                } else {
+                  el.classList.add('is-selected')
+                  el.querySelector('.fc-event-title.fc-sticky')!.textContent = '선택됨'
+                  updateSelectedTimeList(true, event.id)
+                }
+                console.log('selectedTimeList', selectedTimeList)
+              }
+            },
+          }}
+        ></FullCalendar>
+      </FullCalendarWrapper>
     </div>
   )
 }
