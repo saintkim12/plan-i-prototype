@@ -139,6 +139,7 @@ export default function Timetable({ eventList, selectedTimeList: $initSelectedTi
             locale: 'ko-KR',
             plugins: [timeGridPlugin, listPlugin],
             initialView: 'timeGridWeek',
+            initialDate: '2022-04-26',
             headerToolbar: {
               left: 'prev,next today',
               center: 'title',
