@@ -1,7 +1,7 @@
 import localForage from 'localforage'
 import flow from 'lodash/fp/flow'
 import { DateTime } from 'luxon'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Timetable from '/src/components/Timetable'
 
 type GoogleCalendarEventTime = { dateTime: string, timeZone: string }
@@ -113,7 +113,7 @@ export default function Schedule({ $interviewerList = [] }) {
       && (DateTime.fromMillis(token.createdIn).plus({ milliseconds: token.expiresIn }).diffNow().toMillis() > 0)
   }, [token])
 
-  function loadEventList() {
+  const loadEventList = useCallback(() => {
     console.log('loadEventList')
     const googleCalendarIdList: { username: string, calendarId: string }[] = interviewerList.flatMap(({ username, calendarList }) => calendarList.filter(({ type }) => type === 'google').map(({ id }) => ({ username, calendarId: id })))
     return Promise.allSettled(
@@ -123,7 +123,7 @@ export default function Schedule({ $interviewerList = [] }) {
         .flatMap(m => m)
     }).then(setEventList)
     // getEvents(token, { timeMin, timeMax }).then(setEventList)
-  }
+  }, [token])
 
   useEffect(() => {
     /*
@@ -159,6 +159,7 @@ export default function Schedule({ $interviewerList = [] }) {
           if (localData?.accessToken) {
             setToken(localData)
           }
+          // localForage.removeItem('token')
         })()
       }
     } catch(e) {
