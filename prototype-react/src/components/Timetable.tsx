@@ -1,11 +1,10 @@
-// import './timetable.scss'
 // import '@fullcalendar/core/vdom' /* https://github.com/fullcalendar/fullcalendar-vue/issues/152 */
 import '@fullcalendar/react/dist/vdom' /* https://github.com/fullcalendar/fullcalendar-vue/issues/152 */
 import FullCalendar from '@fullcalendar/react' // must go before plugins
-import { Calendar, EventInput } from '@fullcalendar/core'
+import type { EventInput } from '@fullcalendar/core'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { flow, pick, sortedUniq, uniq } from 'lodash/fp'
 import { DateTime } from 'luxon'
 import styled from 'styled-components'
