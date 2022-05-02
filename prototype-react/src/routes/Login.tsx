@@ -1,5 +1,5 @@
-import { mdiCheck, mdiEmail, mdiLock } from '@mdi/js'
-import Icon from '@mdi/react'
+// import { mdiCheck, mdiEmail, mdiLock } from '@mdi/js'
+// import Icon from '@mdi/react'
 import { Component } from 'react'
 import Wrapper from '/src/components/Wrapper'
 
@@ -13,11 +13,11 @@ export default class Login extends Component {
               <input className="input" type="email" placeholder="Email" />
               <span className="icon is-small is-left">
                 {/* <i className="fas fa-envelope"></i> */}
-                <Icon path={mdiEmail} size={'24'} />
+                {/* <Icon path={mdiEmail} size={'24'} /> */}
               </span>
               <span className="icon is-small is-right">
                 {/* <i className="fas fa-check"></i> */}
-                <Icon path={mdiCheck} size={'24'} />
+                {/* <Icon path={mdiCheck} size={'24'} /> */}
               </span>
             </p>
           </div>
@@ -26,7 +26,7 @@ export default class Login extends Component {
               <input className="input" type="password" placeholder="Password" />
               <span className="icon is-small is-left">
                 {/* <i className="fas fa-lock"></i> */}
-                <Icon path={mdiLock} size={'24'} />
+                {/* <Icon path={mdiLock} size={'24'} /> */}
               </span>
             </p>
           </div>

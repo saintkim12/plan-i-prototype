@@ -5,10 +5,14 @@ import { ConfigEnv, defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://sambitsahoo.com/blog/vite-code-splitting-that-works.html
-function renderChunks({ deps = dependencies ?? {}, vendor = [] }: { deps?: Record<string, string>, vendor: string[] }) {
+function renderChunks(vendor: string[], chunks?: Record<string, string[]>) {
+  const $deps = dependencies ?? {}
+  const alreadyDefinedDeps = [...vendor, ...Object.values({ ...chunks }).flatMap(d => d)]
+  console.log('alreadyDefinedDeps', alreadyDefinedDeps)
   return Object.fromEntries([
     ['vendor', vendor],
-    ...Object.keys(deps).filter((key) => !vendor.includes(key)).map((key) => [key, [key]])
+    ...Object.entries({ ...chunks }),
+    ...Object.keys($deps).filter((key) => !alreadyDefinedDeps.includes(key)).map((key) => [key, [key]])
   ])
 }
 // htt
@@ -26,7 +30,13 @@ export default defineConfig((env: ConfigEnv) => ({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: renderChunks({ vendor: ['react', 'react-router-dom', 'react-dom'] })
+        manualChunks: renderChunks(
+          ['react', 'react-router-dom', 'react-dom'],
+          {
+            fullcalendar: ['@fullcalendar/react/dist/vdom', '@fullcalendar/react', '@fullcalendar/core'],
+            mdi: ['@mdi/js', '@mdi/react'],
+          }
+        )
       },
     }
   }
