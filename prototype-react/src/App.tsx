@@ -16,6 +16,7 @@ export default function App() {
   const Login = lazy(() => import('/src/routes/Login'))
   const Schedule = lazy(() => import('/src/routes/Schedule'))
   const Chat = lazy(() => import('/src/routes/Chat'))
+  const LoginPopup = lazy(() => import('/src/routes/LoginPopup'))
   return (
     <>
       <GlobalStyle />
@@ -27,6 +28,9 @@ export default function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/schedule' element={<Schedule />} />
             <Route path='/chat' element={<Chat />} />
+            {/* hidden pages */}
+            <Route path='/popup/login' element={<LoginPopup />} />
+            {/* hidden pages */}
             <Route
               path='*'
               element={

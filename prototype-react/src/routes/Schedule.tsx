@@ -1,13 +1,19 @@
 import { Component } from 'react'
 import styled from 'styled-components'
 import ScheduleCalendar from '/src/components/ScheduleCalendar'
+import { GoogleLoginButton } from '/src/components/GoogleAuthentication'
 // import Wrapper from '/src/components/Wrapper'
 
+type CalendarItemValue = {
+  username: string
+  calendarId: string
+  type: 'google' | 'raw'
+}
 interface ComponentProps {
   initSelected?: string[]
 }
 interface ComponentState {
-  itemList: { value: string, text: string }[]
+  itemList: { value: CalendarItemValue, text: string }[]
   selectedItem: string[]
 }
 
@@ -28,7 +34,7 @@ class InterviewerSelectBoxComponent extends Component<InterviewerSelectBoxCompon
   toggleAllItems(checked: boolean) {
     console.log('checked', checked)
     if (checked) {
-      this.props.updateSelectedItem(this.props.itemList.map(({ value }) => value))
+      this.props.updateSelectedItem(this.props.itemList.map(({ value: { calendarId: value } }) => value))
     } else {
       this.props.updateSelectedItem([])
     }
@@ -53,10 +59,10 @@ class InterviewerSelectBoxComponent extends Component<InterviewerSelectBoxCompon
             type="checkbox"
             className="checkbox"
             onChange={(e) => toggleAllItems(e.target.checked)} />
-            전체체크
+            모든 면접 가능 일정 보기
           </label>
         <div className="ml-4">
-          { itemList.map(({ text, value }) => <p key={value}>
+          { itemList.map(({ text, value: { calendarId: value } }) => <p key={value}>
             <label>
               <input
                 type="checkbox"
@@ -136,11 +142,22 @@ export default class Schedule extends Component<ComponentProps, ComponentState> 
     const initSelected = this.props.initSelected ?? []
     this.state = {
       itemList: [
-        { value: 'AAA', text: 'AAA' },
-        { value: 'BBB', text: 'BBB' },
-        { value: 'CCC', text: 'CCC' },
-        { value: 'DDD', text: 'DDD' },
-        { value: 'EEE', text: 'EEE' },
+        {
+          value: {
+            username: 'kiparseo@gmail.com',
+            calendarId: 'kiparseo@gmail.com',
+            type: 'google',
+          },
+          text: 'kiparseo@gmail.com'
+        },
+        {
+          value: {
+            username: 'saintkim1232@gmail.com',
+            calendarId: 'saintkim1232@gmail.com',
+            type: 'google',
+          },
+          text: 'saintkim1232@gmail.com'
+        },
       ],
       selectedItem: [...initSelected],
     }
@@ -177,12 +194,12 @@ export default class Schedule extends Component<ComponentProps, ComponentState> 
           </div>
           <div className="column is-9">
             <div className="is-flex is-justify-content-flex-end mb-1" style={{ height: `calc(${'40px'})` }}>
-              <button className="button is-normal">연동</button>
+              <GoogleLoginButton />
               <button className="button is-normal">연동</button>
               <button className="button is-normal">연동</button>
             </div>
             <div style={{ border: '1px solid #ddd', height: `calc(100% - ${'40px'} - ${'40px'})`, overflowY: 'auto' }}>
-              <ScheduleCalendar locale="ko-KR" />
+              <ScheduleCalendar locale="ko-KR" option={{ initialDate: '2022-04-26' }} />
             </div>
             <div className="is-flex is-justify-content-flex-end mt-1" style={{ height: `calc(${'40px'})` }}>
               <button className="button is-primary">제출하기</button>
