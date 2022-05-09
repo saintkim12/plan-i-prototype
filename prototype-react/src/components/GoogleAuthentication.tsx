@@ -2,6 +2,7 @@ import { Component } from 'react'
 import { DateTime } from 'luxon'
 import localForage from 'localforage'
 import { flow } from 'lodash/fp'
+import { EventInput } from '@fullcalendar/react'
 
 interface GoogleOAuth2Token {
   accessToken: string
@@ -13,6 +14,10 @@ interface CustomToken {
   createdIn: number
 }
 type GoogleToken = GoogleOAuth2Token & CustomToken
+
+export async function getToken() {
+  return await localForage.getItem('token') as (ComponentState['token'] | null)
+}
 
 export async function storeToken(hash: string) {
   try {
@@ -42,6 +47,71 @@ export async function storeToken(hash: string) {
   }
 }
 
+type GoogleCalendarEventTime = { dateTime: string, timeZone: string }
+type GoogleCalendarEventItem = { id: string, summary: string, start: GoogleCalendarEventTime, end: GoogleCalendarEventTime, [key: string]: any }
+export type EventItem = { username: string, id: string, title: string, start: string, end: string, color?: string }
+type GetEventOption = { username?: string, timeZone?: 'Asia/Seoul' | 'Asia/Tokyo', timeMin?: string, timeMax?: string, color?: string }
+export async function getGoogleCalendarEvents<T extends GoogleOAuth2Token>(calendarId: string, optToken: T | null, option?: GetEventOption) {
+  // const CLIENT_ID = import.meta.env.VITE_GOOGLE_API_CLIENT_ID
+  // const REDIRECT_URI = import.meta.env.VITE_GOOGLE_API_REDIRECT_URI
+  const API_KEY = import.meta.env.VITE_GOOGLE_API_API_KEY
+  
+  const token = optToken ?? (await getToken())
+  if (!token) return Promise.resolve([])
+  if (!calendarId) return Promise.resolve([])
+  const username = option?.username
+  const color = option?.color
+  const timeZone = option?.timeZone ?? 'Asia/Seoul'
+  const timeMin = flow(s => s ? `${s}:00Z` : '')(option?.timeMin as string)
+  const timeMax = flow(s => s ? `${s}:00Z` : '')(option?.timeMax as string)
+  console.log('timeMin', timeMin, 'timeMax', timeMax)
+    
+  return fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?${new URLSearchParams({
+    key: API_KEY,
+    timeZone: timeZone,
+    ...(timeMin && { timeMin }),
+    ...(timeMax && { timeMax }),
+  }).toString()}`, {
+    method: 'get',
+    headers: {
+      'Authorization': `${token.tokenType} ${token.accessToken}`,
+      'Content-Type': 'application/json;charset=UTF-8',
+    }
+  }).then(r => r.json()).then(data => {
+    /*
+      * accessRole: "owner"
+      * defaultRemindars: [{…}]
+      * etag: "\"p32sfdp6vtaofe0g\""
+      * items: (19) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+      *    created: "2022-04-26T03:32:20.000Z"
+      *    creator: {email: 'kiparseo@gmail.com', self: true}
+      *    end: {dateTime: '2022-04-26T10:45:00+09:00', timeZone: 'Asia/Seoul'}
+      *    etag: "\"3301888799612000\""
+      *    eventType: "default"
+      *    htmlLink: "https://www.google.com/calendar/event?eid=MDczMG9kMjc2dGVnNmFmcnFyM2NnMXN2YTIga2lwYXJzZW9AbQ"
+      *    iCalUID: "0730od276teg6afrqr3cg1sva2@google.com"
+      *    id: "*"
+      *    kind: "calendar#event"
+      *    organizer: {email: 'kiparseo@gmail.com', self: true}
+      *    remindars: {useDefault: true}
+      *    sequence: 2
+      *    start: {dateTime: '2022-04-26T09:45:00+09:00', timeZone: 'Asia/Seoul'}
+      *    status: "confirmed"
+      *    summary: "대충만든일정"
+      *    updated: "2022-04-26T03:39:59.806Z"
+      * kind: "calendar#events"
+      * nextSyncToken: "*"
+      * summary: "kiparseo@gmail.com"
+      * timeZone: "Asia/Seoul"
+      * updated: "2022-04-26T03:56:04.147Z"
+      */
+    // console.log('data', data)
+    const items: GoogleCalendarEventItem[] = data?.items ?? []
+    return items.map((o: GoogleCalendarEventItem) => ({ username: username, id: o.id, title: o.summary, start: o.start.dateTime, end: o.end.dateTime, ...(color && { color }) } as EventItem))
+  })
+  // }
+}
+
 interface ComponentProps { children?: React.ReactNode }
 interface ComponentState { token: GoogleToken }
 export class GoogleLoginButton extends Component<ComponentProps, ComponentState> {
@@ -49,7 +119,7 @@ export class GoogleLoginButton extends Component<ComponentProps, ComponentState>
     super(props)
   }
   async componentDidMount() {
-    const localData: ComponentState['token'] | null = await localForage.getItem('token')
+    const localData: ComponentState['token'] | null = await getToken()
     if (localData) {
       this.setToken(localData)
     }

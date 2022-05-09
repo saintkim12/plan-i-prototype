@@ -16,6 +16,7 @@
     "@mdi/js": "^6.6.96",
     "@mdi/react": "^1.6.0",
     "bulma": "^0.9.3",
+    "distinct-colors": "^3.0.0",
     "hangul-search-js": "^1.0.5",
     "kor-string-similarity": "^1.0.2",
     "localforage": "^1.10.0",

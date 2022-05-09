@@ -1,13 +1,16 @@
 import { Component } from 'react'
 import styled from 'styled-components'
+import distinctColors from 'distinct-colors'
 import ScheduleCalendar from '/src/components/ScheduleCalendar'
-import { GoogleLoginButton } from '/src/components/GoogleAuthentication'
+import { EventItem, getGoogleCalendarEvents, GoogleLoginButton } from '/src/components/GoogleAuthentication'
+import { flow } from 'lodash/fp'
 // import Wrapper from '/src/components/Wrapper'
 
 type CalendarItemValue = {
   username: string
   calendarId: string
   type: 'google' | 'raw'
+  color: any
 }
 interface ComponentProps {
   initSelected?: string[]
@@ -15,6 +18,7 @@ interface ComponentProps {
 interface ComponentState {
   itemList: { value: CalendarItemValue, text: string }[]
   selectedItem: string[]
+  eventList: any[]
 }
 
 
@@ -62,7 +66,7 @@ class InterviewerSelectBoxComponent extends Component<InterviewerSelectBoxCompon
             모든 면접 가능 일정 보기
           </label>
         <div className="ml-4">
-          { itemList.map(({ text, value: { calendarId: value } }) => <p key={value}>
+          { itemList.map(({ text, value: { calendarId: value, color } }) => <p key={value}>
             <label>
               <input
                 type="checkbox"
@@ -71,7 +75,8 @@ class InterviewerSelectBoxComponent extends Component<InterviewerSelectBoxCompon
                 value={value}
                 checked={selectedItem.includes(value)}
                 onChange={(e) => toggleItem(value, e.target.checked)} />
-              {text}
+              <span className="ml-1" style={{ color }}>■</span>
+              <span className="ml-1">{text}</span>
             </label>
           </p>) }
         </div>
@@ -141,7 +146,10 @@ export default class Schedule extends Component<ComponentProps, ComponentState> 
     super(props)
     const initSelected = this.props.initSelected ?? []
     this.state = {
-      itemList: [
+      itemList: flow(
+        list => [list, distinctColors({ count: list.length }).map(c => c.css())],
+        ([list, colors]: [ComponentState['itemList'], string[]]) => list.map(({ value, ...item }, idx) => ({ ...item, value: ({ ...value, color: colors[idx] } as CalendarItemValue) }))
+      )([
         {
           value: {
             username: 'kiparseo@gmail.com',
@@ -158,22 +166,25 @@ export default class Schedule extends Component<ComponentProps, ComponentState> 
           },
           text: 'saintkim1232@gmail.com'
         },
-      ],
+      ]),
       selectedItem: [...initSelected],
+      eventList: []
     }
   }
-  updateSelectedItem(arg: string[] | ((arr: string[]) => string[])) {
-    if (typeof arg === 'function') {
-      // this.setState({ selectedItem: arg(this.selectedItem) }, function() { console.log('selectedItem', selectedItem) })
-      // console.log('fn', arg(this.state.selectedItem))
-      this.setState((state: { selectedItem: string[] }) => ({ ...state, selectedItem: arg(state.selectedItem) }))
-    } else {
-      this.setState((state: { selectedItem: string[] }) => ({ ...state, selectedItem: arg }))
-    }
+  async updateSelectedItem(arg: string[] | ((arr: string[]) => string[])) {
+    const selectedItem = (typeof arg === 'function') ? arg(this.state.selectedItem) : arg
+    this.setState((state) => ({ ...state, selectedItem }))
+    const eventList: any[] = await Promise.allSettled([
+      // google
+      ...this.state.itemList.filter(({ value }) => selectedItem.includes(value.calendarId) && value?.type === 'google')
+        .map(({ value: { calendarId, color } }) => getGoogleCalendarEvents(calendarId, null, { color }))
+    ]).then(results => results.filter(result => result.status === 'fulfilled').flatMap(result => (result as PromiseFulfilledResult<EventItem[]>).value))
+    this.setState((state) => ({ ...state, selectedItem, eventList }))
   }
   render() {
     const itemList = this.state.itemList
     const selectedItem = this.state.selectedItem
+    const eventList = this.state.eventList
     const updateSelectedItem = this.updateSelectedItem.bind(this)
     return (
       <Wrapper className="container is-fluid pt-1">
@@ -199,7 +210,11 @@ export default class Schedule extends Component<ComponentProps, ComponentState> 
               <button className="button is-normal">연동</button>
             </div>
             <div style={{ border: '1px solid #ddd', height: `calc(100% - ${'40px'} - ${'40px'})`, overflowY: 'auto' }}>
-              <ScheduleCalendar locale="ko-KR" option={{ initialDate: '2022-04-26' }} />
+              <ScheduleCalendar
+                locale="ko-KR"
+                option={{ initialDate: '2022-04-26' }}
+                eventList={eventList}
+              />
             </div>
             <div className="is-flex is-justify-content-flex-end mt-1" style={{ height: `calc(${'40px'})` }}>
               <button className="button is-primary">제출하기</button>

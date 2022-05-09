@@ -1,21 +1,26 @@
 import '@fullcalendar/react/dist/vdom' /* https://github.com/fullcalendar/fullcalendar-vue/issues/152 */
-import FullCalendar from '@fullcalendar/react' // must go before plugins
+import FullCalendar, { EventApi } from '@fullcalendar/react' // must go before plugins
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Component } from 'react'
+import { Component, createRef } from 'react'
+// import { differenceWith } from 'lodash/fp'
 
 interface ComponentProps {
   locale?: 'ko-KR' | 'en-US'
   option?: Record<string, any>
+  eventList?: any[]
 }
 interface ComponentState {}
 export default class ScheduleCalendar extends Component<ComponentProps, ComponentState> {
-  // fullCalendarRef
+  private fullCalendarRef: React.RefObject<FullCalendar>
 
   constructor(props: ComponentProps) {
     super(props)
-    // this.fullCalendarRef = createRef(null)
+    this.fullCalendarRef = createRef()
   }
   render() {
+    const eventList = this.props?.eventList ?? []
+    console.log('eventList.length', eventList.length)
+    console.log('this.fullCalendarRef', this.fullCalendarRef)
     const fullCalendarOptions = {
       plugins: [timeGridPlugin],
       initialView: 'timeGridWeek',
@@ -27,9 +32,10 @@ export default class ScheduleCalendar extends Component<ComponentProps, Componen
         right: 'prev,next today',
       },
       // initialDate: '2022-04-26',
+      events: eventList,
     }
     return (
-      <FullCalendar {...{ ...fullCalendarOptions, ...this.props.option }} />
+      <FullCalendar ref={this.fullCalendarRef} {...{ ...fullCalendarOptions, ...this.props.option }} />
     )
   }
 }
