@@ -2,14 +2,17 @@ import '@fullcalendar/react/dist/vdom' /* https://github.com/fullcalendar/fullca
 import FullCalendar, { EventApi } from '@fullcalendar/react' // must go before plugins
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { Component, createRef } from 'react'
+import { InterviewInfo } from '/src/routes/Schedule'
 // import { differenceWith } from 'lodash/fp'
 
 interface ComponentProps {
   locale?: 'ko-KR' | 'en-US'
   option?: Record<string, any>
   eventList?: any[]
+  interviewInfo? : InterviewInfo
 }
-interface ComponentState {}
+interface ComponentState {
+}
 export default class ScheduleCalendar extends Component<ComponentProps, ComponentState> {
   private fullCalendarRef: React.RefObject<FullCalendar>
 
@@ -19,8 +22,9 @@ export default class ScheduleCalendar extends Component<ComponentProps, Componen
   }
   render() {
     const eventList = this.props?.eventList ?? []
-    console.log('eventList.length', eventList.length)
-    console.log('this.fullCalendarRef', this.fullCalendarRef)
+    // console.log('eventList.length', eventList.length)
+    // console.log('this.fullCalendarRef', this.fullCalendarRef)
+    const businessHours = this.props?.interviewInfo?.businessHours
     const fullCalendarOptions = {
       plugins: [timeGridPlugin],
       initialView: 'timeGridWeek',
@@ -32,6 +36,7 @@ export default class ScheduleCalendar extends Component<ComponentProps, Componen
         right: 'prev,next today',
       },
       // initialDate: '2022-04-26',
+      ...(businessHours && { businessHours }),
       events: eventList,
     }
     return (

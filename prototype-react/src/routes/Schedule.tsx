@@ -12,6 +12,9 @@ type CalendarItemValue = {
   type: 'google' | 'raw'
   color: any
 }
+export type InterviewInfo = {
+  businessHours: { startTime: string, endTime: string }
+}
 interface ComponentProps {
   initSelected?: string[]
 }
@@ -19,6 +22,7 @@ interface ComponentState {
   itemList: { value: CalendarItemValue, text: string }[]
   selectedItem: string[]
   eventList: any[]
+  interviewInfo: InterviewInfo 
 }
 
 
@@ -168,7 +172,13 @@ export default class Schedule extends Component<ComponentProps, ComponentState> 
         },
       ]),
       selectedItem: [...initSelected],
-      eventList: []
+      eventList: [],
+      interviewInfo: {
+        businessHours: {
+          startTime: '09:00',
+          endTime: '18:00',
+        }
+      }
     }
   }
   async updateSelectedItem(arg: string[] | ((arr: string[]) => string[])) {
@@ -185,43 +195,48 @@ export default class Schedule extends Component<ComponentProps, ComponentState> 
     const itemList = this.state.itemList
     const selectedItem = this.state.selectedItem
     const eventList = this.state.eventList
+    const interviewInfo = this.state.interviewInfo
     const updateSelectedItem = this.updateSelectedItem.bind(this)
     return (
-      <Wrapper className="container is-fluid pt-1">
-        <div className="columns" style={{ height: 'inherit' }}>
-          <div className="column is-3">
-            <div className="pt-1" style={{ marginTop: `${'40px'}`}}>
-              <p className="subtitle">OOO's Calendar</p>
-              <div>
-                뭐라뭐라
-                {/* 선택된 항목은 {selectedItem.join(',')}임 */}
+      <>
+        <Wrapper className="container is-fluid pt-1">
+          <div className="columns" style={{ height: 'inherit' }}>
+            <div className="column is-3">
+              <div className="pt-1" style={{ marginTop: `${'40px'}`}}>
+                <p className="subtitle">OOO's Calendar</p>
+                <div>
+                  뭐라뭐라
+                  {/* 선택된 항목은 {selectedItem.join(',')}임 */}
+                </div>
               </div>
-            </div>
-            <InterviewerSelectBox
-              itemList={itemList}
-              selectedItem={selectedItem}
-              updateSelectedItem={updateSelectedItem}
-            />
-          </div>
-          <div className="column is-9">
-            <div className="is-flex is-justify-content-flex-end mb-1" style={{ height: `calc(${'40px'})` }}>
-              <GoogleLoginButton />
-              <button className="button is-normal">연동</button>
-              <button className="button is-normal">연동</button>
-            </div>
-            <div style={{ border: '1px solid #ddd', height: `calc(100% - ${'40px'} - ${'40px'})`, overflowY: 'auto' }}>
-              <ScheduleCalendar
-                locale="ko-KR"
-                option={{ initialDate: '2022-04-26' }}
-                eventList={eventList}
+              <InterviewerSelectBox
+                itemList={itemList}
+                selectedItem={selectedItem}
+                updateSelectedItem={updateSelectedItem}
               />
             </div>
-            <div className="is-flex is-justify-content-flex-end mt-1" style={{ height: `calc(${'40px'})` }}>
-              <button className="button is-primary">제출하기</button>
+            <div className="column is-9">
+              <div className="is-flex is-justify-content-flex-end mb-1" style={{ height: `calc(${'40px'})` }}>
+                <GoogleLoginButton />
+                <button className="button is-normal">연동</button>
+                <button className="button is-normal">연동</button>
+              </div>
+              <div style={{ border: '1px solid #ddd', height: `calc(100% - ${'40px'} - ${'40px'})`, overflowY: 'auto' }}>
+                <ScheduleCalendar
+                  locale="ko-KR"
+                  option={{ initialDate: '2022-04-26' }}
+                  eventList={eventList}
+                  interviewInfo={interviewInfo}
+                />
+              </div>
+              <div className="is-flex is-justify-content-flex-end mt-1" style={{ height: `calc(${'40px'})` }}>
+                <button className="button is-primary">제출하기</button>
+              </div>
             </div>
           </div>
-        </div>
-      </Wrapper>
+        </Wrapper>
+        
+      </>
     )
   }
 }
