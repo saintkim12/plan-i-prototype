@@ -1,5 +1,5 @@
 import 'bulma'
-import { Component, Suspense, lazy } from 'react'
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
 import Main from '/src/routes/Main'
@@ -14,6 +14,7 @@ const GlobalStyle = createGlobalStyle`
 // https://github.com/vitejs/vite/issues/1747
 export default function App() {
   const Login = lazy(() => import('/src/routes/Login'))
+  const Dashboard = lazy(() => import('/src/routes/Dashboard'))
   const Schedule = lazy(() => import('/src/routes/Schedule'))
   const Chat = lazy(() => import('/src/routes/Chat'))
   const LoginPopup = lazy(() => import('/src/routes/LoginPopup'))
@@ -26,6 +27,7 @@ export default function App() {
           <Routes>
             <Route path='/' element={<Main />} />
             <Route path='/login' element={<Login />} />
+            <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/schedule' element={<Schedule />} />
             <Route path='/chat' element={<Chat />} />
             {/* hidden pages */}

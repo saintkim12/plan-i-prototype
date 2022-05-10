@@ -1,14 +1,30 @@
 import styled from 'styled-components'
 
-const Wrapper = styled.div`
+const baseCss = `
   height: 100vh;
-  background-color: #282c34;
+  background-color: #E5E5E5;
+`
+const childCenter = `
+  /* child h-center */
   text-align: center;
   margin: auto;
+`
+const parentCenter = `
   display: flex;
+  /* v-center */
   flex-direction: column;
   align-items: center;
+  /* h-center */
   justify-content: center;
 `
+const BaseWrapper = styled.div`
+  ${baseCss}
+`
+const CenteredWrapper = styled.div`
+  ${baseCss}
+  ${childCenter}
+  ${parentCenter}
+`
 
-export default Wrapper
+export { BaseWrapper as Wrapper }
+export default CenteredWrapper

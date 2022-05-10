@@ -1,4 +1,3 @@
-import localForage from 'localforage'
 import { Component } from 'react'
 import { storeToken } from '/src/components/GoogleAuthentication'
 

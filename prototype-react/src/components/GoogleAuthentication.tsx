@@ -1,24 +1,13 @@
 import { Component } from 'react'
 import { DateTime } from 'luxon'
-import localForage from 'localforage'
-import { flow } from 'lodash/fp'
-import { EventInput } from '@fullcalendar/react'
+import flow from 'lodash/fp/flow'
+import { getGoogleToken, GoogleOAuth2Token, GoogleToken, setGoogleToken } from './storage'
 
-interface GoogleOAuth2Token {
-  accessToken: string
-  tokenType: string
-  expiresIn: number
-  scope: string[]
-}
-interface CustomToken {
-  createdIn: number
-}
-type GoogleToken = GoogleOAuth2Token & CustomToken
+const API_KEY = import.meta.env.VITE_GOOGLE_API_API_KEY
 
-export async function getToken() {
-  return await localForage.getItem('token') as (ComponentState['token'] | null)
+export function getToken() {
+  return getGoogleToken()
 }
-
 export async function storeToken(hash: string) {
   try {
     console.log('hash', hash)
@@ -38,7 +27,7 @@ export async function storeToken(hash: string) {
         createdIn: Date.now(),
       }
       // window.history.replaceState(null, '', window.location.pathname)
-      await localForage.setItem('token', paramToToken)
+      await setGoogleToken(paramToToken)
     }
     return true
   } catch(e) {
@@ -47,15 +36,77 @@ export async function storeToken(hash: string) {
   }
 }
 
+export function googleLogin() {
+  const CLIENT_ID = import.meta.env.VITE_GOOGLE_API_CLIENT_ID
+  const REDIRECT_URI = import.meta.env.VITE_GOOGLE_API_REDIRECT_URI
+  return new Promise((resolve, reject) => {
+    const popupWindow = window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
+      'client_id': CLIENT_ID,
+      'redirect_uri': REDIRECT_URI,
+      'response_type': 'token',
+      'include_granted_scopes': 'true',
+      'scope': [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/calendar.events.readonly',
+        'https://www.googleapis.com/auth/calendar.readonly',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+      ].join(' ')
+    })}`, '_blank')
+    if (!popupWindow) {
+      reject(new Error('popupWindow is not defined'))
+      return
+    }
+    popupWindow.onbeforeunload = () => {
+      console.log('popup maybe closed')
+      resolve(true)
+    }
+  })
+}
+
+/**
+ * user
+ */
+interface GoogleUserInfo {
+  // scope: https://www.googleapis.com/auth/userinfo.email
+  family_name?: string
+  given_name?: string
+  id: string
+  locale?: string
+  name: string
+  picture: string
+  // scope: https://www.googleapis.com/auth/userinfo.profile
+  email: string
+  verified_email: boolean
+}
+
+export async function getGoogleUserInfo<T extends GoogleOAuth2Token>(optToken?: T | null) {
+  const token = optToken ?? (await getToken())
+  if (!token) return Promise.resolve(undefined)
+  return fetch(`https://www.googleapis.com/oauth2/v1/userinfo?${new URLSearchParams({
+    key: API_KEY,
+    alt: 'json',
+  }).toString()}`, {
+    method: 'get',
+    headers: {
+      'Authorization': `${token?.tokenType} ${token?.accessToken}`,
+      'Content-Type': 'application/json;charset=UTF-8',
+    }
+  }).then(r => r.json()).then(data => {
+    console.log('data', data)
+    return (data as GoogleUserInfo)
+  })
+}
+/**
+ * calendar
+ */
+
 type GoogleCalendarEventTime = { dateTime: string, timeZone: string }
 type GoogleCalendarEventItem = { id: string, summary: string, start: GoogleCalendarEventTime, end: GoogleCalendarEventTime, [key: string]: any }
 export type EventItem = { username: string, id: string, title: string, start: string, end: string, color?: string }
 type GetEventOption = { username?: string, timeZone?: 'Asia/Seoul' | 'Asia/Tokyo', timeMin?: string, timeMax?: string, color?: string }
 export async function getGoogleCalendarEvents<T extends GoogleOAuth2Token>(calendarId: string, optToken: T | null, option?: GetEventOption) {
-  // const CLIENT_ID = import.meta.env.VITE_GOOGLE_API_CLIENT_ID
-  // const REDIRECT_URI = import.meta.env.VITE_GOOGLE_API_REDIRECT_URI
-  const API_KEY = import.meta.env.VITE_GOOGLE_API_API_KEY
-  
   const token = optToken ?? (await getToken())
   if (!token) return Promise.resolve([])
   if (!calendarId) return Promise.resolve([])
@@ -130,32 +181,8 @@ export class GoogleLoginButton extends Component<ComponentProps, ComponentState>
     })
   }
   onTryLogin() {
-    const CLIENT_ID = import.meta.env.VITE_GOOGLE_API_CLIENT_ID
-    const REDIRECT_URI = import.meta.env.VITE_GOOGLE_API_REDIRECT_URI
-    // const API_KEY = import.meta.env.VITE_GOOGLE_API_API_KEY
-    return new Promise((resolve, reject) => {
-      const popupWindow = window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
-        'client_id': CLIENT_ID,
-        'redirect_uri': REDIRECT_URI,
-        'response_type': 'token',
-        'include_granted_scopes': 'true',
-        'scope': [
-          'https://www.googleapis.com/auth/calendar',
-          'https://www.googleapis.com/auth/calendar.events',
-          'https://www.googleapis.com/auth/calendar.events.readonly',
-          'https://www.googleapis.com/auth/calendar.readonly',
-        ].join(' ')
-      })}`, '_blank')
-      if (!popupWindow) {
-        reject(new Error('popupWindow is not defined'))
-        return
-      }
-      popupWindow.onbeforeunload = () => {
-        console.log('popup maybe closed')
-        resolve(true)
-      }
-    }).then(async () => {
-      const localData: ComponentState['token'] | null = await localForage.getItem('token')
+    googleLogin().then(async () => {
+      const localData: ComponentState['token'] | null = await getToken()
       this.setToken(localData)
     })
   }
