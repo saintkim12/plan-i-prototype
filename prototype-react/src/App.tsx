@@ -1,8 +1,11 @@
 import 'bulma'
 import { Suspense, lazy } from 'react'
+import { Provider } from 'react-redux'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
+import { store } from '/src/store'
 import Main from '/src/routes/Main'
+import { getToken } from './store/token'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -12,14 +15,14 @@ const GlobalStyle = createGlobalStyle`
 
 // HMR을 위해 App은 functional 구조로 작성되어야 함
 // https://github.com/vitejs/vite/issues/1747
-export default function App() {
+export default async function App() {
   const Login = lazy(() => import('/src/routes/Login'))
   const Dashboard = lazy(() => import('/src/routes/Dashboard'))
   const Schedule = lazy(() => import('/src/routes/Schedule'))
   const Chat = lazy(() => import('/src/routes/Chat'))
   const LoginPopup = lazy(() => import('/src/routes/LoginPopup'))
   return (
-    <>
+    <Provider store={store}>
       <GlobalStyle />
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         {/* <Suspense fallback={<div>Loading...</div>}> */}
@@ -44,6 +47,6 @@ export default function App() {
           </Routes>
         </Suspense>
       </BrowserRouter>
-    </>
+    </Provider>
   )
 }
