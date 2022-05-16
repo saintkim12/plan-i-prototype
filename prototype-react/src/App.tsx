@@ -9,6 +9,13 @@ import { useAppDispatch, useAppSelector } from '/src/store'
 const GlobalStyle = createGlobalStyle`
   html, body {
     overflow-y: hidden;
+    overflow-x: hidden;
+  }
+  body {
+    min-height: 100vh;
+  }
+  #root {
+    overflow-y: auto;
   }
 `
 
@@ -21,9 +28,10 @@ export default function App() {
   const Chat = lazy(() => import('/src/routes/Chat'))
   const LoginPopup = lazy(() => import('/src/routes/LoginPopup'))
 
-  /* Google Token 정보 초기화 */
+  /* Redux state 초기화 */
   const dispatch = useAppDispatch()
   useEffect(() => {
+    /* Google Token 정보 초기화 */
     dispatch((initToken()))
   }, [])
   return (

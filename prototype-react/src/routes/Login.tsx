@@ -10,15 +10,18 @@ import { cond } from 'lodash/fp'
 const TitleBox = styled((props) => {
   return (
     <div {...props}>
-      <h1 className="title pb-2">반갑습니다. 플랜아이입니다.</h1>
-      <p className="subtitle">로그인해주세요.</p>
+      <h1 className="title pb-2">반갑습니다. 플래닌입니다.</h1>
+      <p className="subtitle">아이디와 비밀번호를 입력해주세요.</p>
     </div>
   )
 })`
-  height: 30vmin;
+  height: 20vmin;
 `
-const LoginButton = styled(({ className, children, ...props }) => {
-  return (<button className={`${className} button is-success is-fullwidth my-2`} {...props}>{children}</button>)
+const DefaultButton = styled(({ className, children, ...props }) => {
+  return (<button className={`${className} button is-fullwidth my-2`} {...props}>{children}</button>)
+})``
+const SuccessButton = styled(({ className, children, ...props }) => {
+  return (<DefaultButton className={`${className} is-success`} {...props}>{children}</DefaultButton>)
 })``
 
 const LoginButtonBox = styled(({ className, handleLogin, ...props }: { className?: string, handleLogin: (userInfo: UserInfo) => void }) => {
@@ -40,7 +43,12 @@ const LoginButtonBox = styled(({ className, handleLogin, ...props }: { className
         <img src={titleLogo} />
       </div>
       <div className="button-wrap">
-        <LoginButton onClick={onHandleGoogleLogin}>Google로 로그인</LoginButton>
+        <input type="text" className="input is-fullwidth my-2" placeholder="Email" disabled={true} />
+        <input type="password" className="input is-fullwidth my-2" placeholder="Password" disabled={true} />
+        <SuccessButton disabled={true}>로그인</SuccessButton>
+        <DefaultButton disabled={true}>회원가입</DefaultButton>
+        <hr />
+        <SuccessButton onClick={onHandleGoogleLogin}>Google로 로그인</SuccessButton>
         {/* <LoginButton disabled={true}>Naver로 로그인</LoginButton> */}
         {/* <LoginButton disabled={true}>Outlook으로 로그인</LoginButton> */}
       </div>
@@ -54,8 +62,13 @@ const LoginButtonBox = styled(({ className, handleLogin, ...props }: { className
     min-height: 150px;
     display: flex;
     align-items: center;
+    flex-direction: column;
     // padding-top: 0.5rem;
     // padding-bottom: 1rem;
+    & > hr {
+      width: 100%;
+      border-bottom: 1px solid #ccc;
+    }
   }
 `
 
