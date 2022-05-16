@@ -1,26 +1,24 @@
 // import styled from 'styled-components'
-import { Component } from 'react'
+import { cond } from 'lodash/fp'
+import { useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
+import { useAppSelector } from '../store'
 
 interface ComponentProps {
 
 }
-export default class Main extends Component<ComponentProps> {
-  checkLogined() {
-    return true
-  }
-  render() {
-    // const navigate = this.props.navigate
-    if (this.checkLogined()) {
-      // navigate('/dashboard')
-      return <Navigate to="/dashboard" />
-    } else {
-      // navigate('/login')
-      return <Navigate to="/login" />
-    }
-  }
+export default function Main(props: ComponentProps) {
+  const token = useAppSelector(state => state?.token?.token)
+  const loaded = useAppSelector(state => state?.token?.loaded)
+  const isTokenValid = useMemo(() => {
+    if (!token) return false
+    const { accessToken, createdIn, expiresIn } = token
+    const valid = accessToken && (Date.now() <= createdIn + expiresIn)
+    return !!valid
+  }, [token])
+  return cond([
+    [() => !loaded, () => <></>],
+    [() => isTokenValid, () => <Navigate to="/dashboard" />],
+    [() => !isTokenValid, () => <Navigate to="/login" />],
+  ])()
 }
-// export default function WrappedMain(props: ComponentProps) {
-//   const history = useLo();
-//   return <Main {...{ navigate }} {...props} />
-// }
