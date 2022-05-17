@@ -19,6 +19,7 @@ export interface CustomToken {
 export type GoogleToken = GoogleOAuth2Token & CustomToken
 export const getGoogleToken = () => getInStorage('google.token') as Promise<GoogleToken | null>
 export const setGoogleToken = (token: GoogleToken) => setInStorage('google.token', token)
+export const removeGoogleToken = () => removeInStorage('google.token')
 
 /**
  * userInfo

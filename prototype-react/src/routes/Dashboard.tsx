@@ -1,8 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { useAppDispatch } from '/src/store'
 import { Wrapper } from '/src/components/Wrapper'
+import { removeToken } from '/src/store/token'
 
 const NavBar = styled(({ className, ...props }: any) => {
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const onHandleLogout = async () => {
+    await dispatch(removeToken())
+    navigate('/')
+  }
   return (
     <nav className={`${className} navbar`} role="navigation" aria-label="main navigation" {...props}>
       <div className="navbar-brand">
@@ -50,18 +58,18 @@ const NavBar = styled(({ className, ...props }: any) => {
           {/* </div> */}
         {/* </div> */}
 
-        {/* <div className="navbar-end"> */}
-          {/* <div className="navbar-item"> */}
-            {/* <div className="buttons"> */}
+        <div className="navbar-end">
+          <div className="navbar-item">
+            <div className="buttons">
               {/* <a className="button is-primary"> */}
                 {/* <strong>Sign up</strong> */}
               {/* </a> */}
-              {/* <a className="button is-light"> */}
-                {/* Log in */}
-              {/* </a> */}
-            {/* </div> */}
-          {/* </div> */}
-        {/* </div> */}
+              <a className="button is-small is-dark" onClick={onHandleLogout}>
+                Log Out
+              </a>
+            </div>
+          </div>
+        </div>
       {/* </div> */}
     </nav>
   )

@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { DateTime } from 'luxon'
 import flow from 'lodash/fp/flow'
-import { getGoogleToken, GoogleOAuth2Token, GoogleToken, setGoogleToken } from './storage'
+import { removeGoogleToken, getGoogleToken, GoogleOAuth2Token, GoogleToken, setGoogleToken } from './storage'
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_API_KEY
 
@@ -35,6 +35,15 @@ export async function storeToken(hash: string) {
     return false
   }
 }
+export async function removeToken() {
+  try {
+    await removeGoogleToken()
+    return true
+  } catch(e) {
+    console.error(e)
+    return false
+  }
+}
 
 export function googleLogin() {
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_API_CLIENT_ID
@@ -58,10 +67,10 @@ export function googleLogin() {
       reject(new Error('popupWindow is not defined'))
       return
     }
-    popupWindow.onbeforeunload = () => {
+    popupWindow.addEventListener('beforeunload', () => {
       console.log('popup maybe closed')
       resolve(true)
-    }
+    })
   })
 }
 

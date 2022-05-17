@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { GoogleToken } from '/src/components/storage'
-import { getToken as asyncGetToken } from '/src/components/GoogleAuthentication'
+import { getToken as asyncGetToken, removeToken as asyncRemoveToken } from '/src/components/GoogleAuthentication'
 
 const getToken = createAsyncThunk('token/getToken', asyncGetToken)
+const removeToken = createAsyncThunk('token/removeToken', asyncRemoveToken)
 const initToken = createAsyncThunk('token/initToken', async () => {
   try {
     const token = await asyncGetToken()
@@ -30,10 +31,11 @@ const tokenSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getToken.fulfilled, (state, action) => { Object.assign(state, { loaded: true, token: action.payload }) })
+    builder.addCase(removeToken.fulfilled, (state) => { Object.assign(state, { token: null }) })
     builder.addCase(initToken.fulfilled, (state, action) => { Object.assign(state, { loaded: true, token: action.payload }) })
   }
 })
 
 
-export { getToken, initToken }
+export { getToken, removeToken, initToken }
 export default tokenSlice.reducer
