@@ -15,7 +15,7 @@ const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
   }
   #root {
-    overflow-y: auto;
+    /* overflow-y: auto; */
   }
 `
 
