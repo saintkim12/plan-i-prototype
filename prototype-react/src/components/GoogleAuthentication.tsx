@@ -48,29 +48,43 @@ export async function removeToken() {
 export function googleLogin() {
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_API_CLIENT_ID
   const REDIRECT_URI = import.meta.env.VITE_GOOGLE_API_REDIRECT_URI
-  return new Promise((resolve, reject) => {
-    const popupWindow = window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
-      'client_id': CLIENT_ID,
-      'redirect_uri': REDIRECT_URI,
-      'response_type': 'token',
-      'include_granted_scopes': 'true',
-      'scope': [
-        'https://www.googleapis.com/auth/calendar',
-        'https://www.googleapis.com/auth/calendar.events',
-        'https://www.googleapis.com/auth/calendar.events.readonly',
-        'https://www.googleapis.com/auth/calendar.readonly',
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile',
-      ].join(' ')
-    })}`, '_blank')
-    if (!popupWindow) {
-      reject(new Error('popupWindow is not defined'))
-      return
-    }
-    popupWindow.addEventListener('beforeunload', () => {
-      console.log('popup maybe closed')
-      resolve(true)
+  let intervalId: number = -1
+  return removeToken()
+    .then(() => new Promise((resolve, reject) => {
+      const popupWindow = window.open(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
+        'client_id': CLIENT_ID,
+        'redirect_uri': REDIRECT_URI,
+        'response_type': 'token',
+        'include_granted_scopes': 'true',
+        'scope': [
+          'https://www.googleapis.com/auth/calendar',
+          'https://www.googleapis.com/auth/calendar.events',
+          'https://www.googleapis.com/auth/calendar.events.readonly',
+          'https://www.googleapis.com/auth/calendar.readonly',
+          'https://www.googleapis.com/auth/userinfo.email',
+          'https://www.googleapis.com/auth/userinfo.profile',
+        ].join(' ')
+      })}`, '_blank')
+      if (!popupWindow) {
+        reject(new Error('popupWindow is not defined'))
+        return
+      }
+      intervalId = window.setInterval(() => {
+        getToken().then(result => {
+          if (result) {
+            console.log('interval::', 'popup maybe closed')
+            resolve(true)
+          }
+        })
+      }, 1000)
+      popupWindow.addEventListener('beforeunload', () => {
+        console.log('popupWindow::', 'popup maybe closed')
+        resolve(true)
+      })
     })
+  ).finally(() => {
+    clearInterval(intervalId)
+    console.log('interval::', 'interval cleared', intervalId)
   })
 }
 
