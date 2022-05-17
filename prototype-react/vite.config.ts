@@ -34,7 +34,6 @@ export default defineConfig((env: ConfigEnv) => ({
           ['react', 'react-router-dom', 'react-dom'],
           {
             fullcalendar: ['@fullcalendar/react/dist/vdom', '@fullcalendar/react', '@fullcalendar/core'],
-            mdi: ['@mdi/js', '@mdi/react'],
           }
         )
       },
