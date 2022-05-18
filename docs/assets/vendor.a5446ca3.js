@@ -47,4 +47,4 @@ Error generating stack: `+i.message+`
  * LICENSE.md file in the root directory of this source tree.
  *
  * @license MIT
- */function tp(e){let{basename:n,children:t,window:r}=e,l=D.exports.useRef();l.current==null&&(l.current=xd({window:r}));let i=l.current,[o,u]=D.exports.useState({action:i.action,location:i.location});return D.exports.useLayoutEffect(()=>i.listen(u),[i]),D.exports.createElement(Xd,{basename:n,children:t,location:o.location,navigationType:o.action,navigator:i})}export{tp as B,ep as N,bd as R,gc as a,Jd as b,Gd as c,np as d,Yd as e,Zd as g,D as r,Qd as u};
+ */function tp(e){let{basename:n,children:t,window:r}=e,l=D.exports.useRef();l.current==null&&(l.current=xd({window:r}));let i=l.current,[o,u]=D.exports.useState({action:i.action,location:i.location});return D.exports.useLayoutEffect(()=>i.listen(u),[i]),D.exports.createElement(Xd,{basename:n,children:t,location:o.location,navigationType:o.action,navigator:i})}export{tp as B,ep as N,bd as R,gc as a,Jd as b,Gd as c,np as d,Yd as e,tc as f,Zd as g,D as r,Qd as u};
