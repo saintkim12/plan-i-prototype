@@ -115,9 +115,6 @@ export default function Dashboard(props: ComponentProps) {
   return (
     <Wrapper className="is-flex is-justify-content-flex-start" style={{ height: 'inherit' }}>
       <LnbMenu />
-      {/* <h1 className="title">Dashboard</h1> */}
-      {/* <button className="button" onClick={() => navigate('/schedule')}>Schedule</button> */}
-      {/* <PageDashboard /> */}
       <div style={{ flexGrow: 1, height: '100%' }}>
         <NavBar />
         <PageDashboard />

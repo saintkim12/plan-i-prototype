@@ -24,6 +24,7 @@ export default defineConfig((env: ConfigEnv) => ({
     Icons({
       compiler: 'jsx',
       jsx: 'react',
+      autoInstall: true,
     }),
   ],
   resolve: {
