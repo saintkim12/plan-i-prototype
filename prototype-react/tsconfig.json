@@ -19,6 +19,9 @@
       "/src/*": ["./src/*"]
     },
     "typeRoots" : ["./node_modules/@types", "src/typings"],
+    "types": [
+      "unplugin-icons/types/react",
+    ],
     "jsx": "react-jsx"
   },
   "include": ["src"],

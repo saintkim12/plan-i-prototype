@@ -3,6 +3,7 @@ import { dependencies } from './package.json'
 import { resolve } from 'path'
 import { ConfigEnv, defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import Icons from 'unplugin-icons/vite'
 
 // https://sambitsahoo.com/blog/vite-code-splitting-that-works.html
 function renderChunks(vendor: string[], chunks?: Record<string, string[]>) {
@@ -18,7 +19,13 @@ function renderChunks(vendor: string[], chunks?: Record<string, string[]>) {
 // htt
 // https://vitejs.dev/config/
 export default defineConfig((env: ConfigEnv) => ({
-  plugins: [react()],
+  plugins: [
+    react(),
+    Icons({
+      compiler: 'jsx',
+      jsx: 'react',
+    }),
+  ],
   resolve: {
     alias: {
       '/src/': `${resolve(__dirname, './src')}/`,
