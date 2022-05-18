@@ -10,12 +10,16 @@ import { cond } from 'lodash/fp'
 const TitleBox = styled((props) => {
   return (
     <div {...props}>
-      <h1 className="title pb-2">반갑습니다. 플래닌입니다.</h1>
+      <img src="https://via.placeholder.com/72x72" className="pb-3" />
+      <h1 className="title pb-3">반갑습니다</h1>
       <p className="subtitle">아이디와 비밀번호를 입력해주세요.</p>
     </div>
   )
 })`
-  height: 20vmin;
+  height: 30vmin;
+  @media screen and (max-width: 768px) {
+    height: 40vmin;
+  }
 `
 const DefaultButton = styled(({ className, children, ...props }) => {
   return (<button className={`${className} button is-fullwidth my-2`} {...props}>{children}</button>)
@@ -56,7 +60,7 @@ const LoginButtonBox = styled(({ className, handleLogin, ...props }: { className
   )
 })`
   width: 40vw;
-  min-width: 300px;
+  min-width: 480px;
   max-width: 540px;
   .button-wrap {
     min-height: 150px;
