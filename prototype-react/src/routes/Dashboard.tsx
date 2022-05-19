@@ -2,6 +2,105 @@ import styled from 'styled-components'
 import NavBar from '/src/components/NavBar'
 import LnbMenu from '/src/components/LnbMenu'
 import { Wrapper } from '/src/components/Wrapper'
+import IconMagnify from '~icons/mdi/magnify'
+import IconArrowAll from '~icons/mdi/arrow-all'
+import IconCog from '~icons/mdi/cog'
+import IconAndroid from '~icons/mdi/android'
+import IconMenuDown from '~icons/mdi/menu-down'
+import { useCallback, useState } from 'react'
+
+const InsideModal = styled(({ show = false, children, ...props }: { show?: boolean, children: any }) => {
+  const style = {
+    ...(show !== true) && { display: 'none' }
+  }
+  return (
+    <div className="inside-modal" style={style} {...props}>
+      <div className="is-overlay"></div>
+      <div className="modal-content">
+        <div className="card">
+          <div className="card-content">
+            <div className="content">{ children }</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+})`
+  height: inherit;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  .is-overlay {
+    height: inherit;
+    background: #bbbbbb88;
+  }
+`
+const ModalPositionManage = ({ show, form, updateForm, close }: { show?: boolean, form: any, updateForm: (key: string, value: any) => void, close: () => void }) => {
+  return (
+    <InsideModal show={show}>
+      <div className="field">
+        <label className="label">포지션명</label>
+        <div className="control">
+          <input className="input" type="text" placeholder="Text input" value={form.input01} onChange={(e) => updateForm('input01', e.target.value)} />
+        </div>
+      </div>
+      <div className="field">
+        <label className="label">Working Hours 켜기</label>
+        <label className="radio">
+          <input type="radio" name="radio01" value="radio01" checked={form.radio01} onChange={(e) => updateForm('radio01', e.target.value)} /> 9AM ~ 6PM
+        </label>
+      </div>
+      <div className="field">
+        <label className="label">면접관 선택</label>
+        <div className="columns">
+          <div className="column is-8">
+            <label className="checkbox">
+              <input type="checkbox" name="check01" value="check01-01" checked={form.check01.includes('check01-01')} onChange={(e) => updateForm('check01', form.check01.concat(e.target.value))} /> 차승민
+            </label>
+            <label className="checkbox">
+              <input type="checkbox" name="check01" value="check01-02" checked={form.check01.includes('check01-02')} onChange={(e) => updateForm('check01', form.check01.concat(e.target.value))} /> 이진현
+            </label>
+          </div>
+          <div className="column is-4">
+            <div className="control">
+              <div className="select is-small is-fullwidth">
+                <select>
+                  <option value="1">@김지석</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="field">
+        <label className="label">면접자등록</label>
+        <div className="control">
+          <input className="input" type="text" placeholder="Text input" value={form.input02} onChange={(e) => updateForm('input02', e.target.value)} />
+        </div>
+      </div>
+      <div className="field">
+        <div className="control">
+          <input className="input" type="text" placeholder="Text input" value={form.input03} onChange={(e) => updateForm('input03', e.target.value)} />
+        </div>
+      </div>
+      <div className="field">
+        <div className="control">
+          <input className="input" type="text" placeholder="Text input" value={form.input04} onChange={(e) => updateForm('input04', e.target.value)} />
+        </div>
+      </div>
+
+      <div className="field is-grouped is-justify-content-center">
+        <div className="control">
+          <button className="button is-primary" onClick={() => close()}>확인</button>
+        </div>
+      </div>
+    </InsideModal>
+  )
+}
 
 const PageDashboard = styled(({ className, ...props }: any) => {
   const PositionBox = ({ title, children }: { title: string, children: any }) => (
@@ -9,38 +108,101 @@ const PageDashboard = styled(({ className, ...props }: any) => {
       <div className="message-header">
         <p>{ title }</p>
         {/* <button className="delete" aria-label="delete"></button> */}
+        <span className="icon is-small is-clickable"><IconCog /></span>
       </div>
-      <div className="message-body p-0">
+      <div className="message-body px-2 py-2">
         { children }
       </div>
     </article>
   )
-  type ApplicantItemProps = { id: string, selected?: boolean, name: string, email: string, tel: string }
-  const ApplicantItem = ({ selected, name, email, tel }: ApplicantItemProps) => (
-    <div className={`box is-clickable py-1 my-1 ${selected ? 'has-background-link has-text-white' : ''}`}>
-      <article className="media">
-        <div className="media-left">
-          <strong>{ name }</strong>
-        </div>
-        <div className="media-content">
-          <div className="content">
-            <div>email: { email }</div>
-            <div>tel: { tel }</div>
+  type ApplicantItemProps = { id: string, selected?: boolean, name: string, email: string, tel: string, icon?: React.ReactElement }
+  const ApplicantItem = ({ selected, name, email, tel, ...props }: ApplicantItemProps) => {
+    const NameWrapper = ({ children }: { children: any }) => (<div className="is-flex is-align-items-center is-justify-content-space-between">{ children }</div>)
+    return (
+      <div className={`card is-clickable p-3 my-2 ${selected ? 'has-background-link has-text-white' : ''}`}>
+        <article className="media">
+          <div className="media-content">
+            <div className="content">
+              <NameWrapper>
+                <div>
+                  <span className="icon is-small mr-2">
+                    { props.icon ? props.icon : <IconAndroid className="has-text-primary" /> }
+                  </span>
+                  <strong>{ name }</strong>
+                </div>
+                <div>
+                  <IconMenuDown />
+                </div>
+              </NameWrapper>
+              <div className="is-flex is-justify-content-space-between">
+                <div>
+                  <div>{ email }</div>
+                  <div>{ tel }</div>
+                </div>
+                <div className="is-fullheight">
+                  <button className="is-block button is-primary is-small" style={{ height: '100%' }}>
+                    <span className="is-block">05/19</span>
+                    <span className="is-block">14:00</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </article>
-    </div>
-  )
+        </article>
+      </div>
+    )
+  }
+
+  /* modal 보이기, 감추기 처리 */
+  const [showModalPositionManage, setShowModalPositionManage] = useState(false)
+  const toggleModalPositionManage = useCallback(() => {
+    setShowModalPositionManage(!showModalPositionManage)
+  }, [showModalPositionManage])
+  
+  /* 선택한 항목 form 처리 */
+  const [form, setForm] = useState({
+    input01: 'Backend 개발자',
+    radio01: 'radio01',
+    check01: ['check01-01'],
+    input02: '홍길동',
+    input03: 'sdlfjei56@gmail.com',
+    input04: '010-3456-2464',
+  })
+  const updateForm = (key: string, value: any) => {
+    setForm(oldForm => ({ ...oldForm, [key]: value }))
+  }
+
   return (
     <main className={`p-2 ${className}`} {...props}>
-      <div className="tabs">
-        <ul>
-          <li className="is-active"><a>1차면접</a></li>
-          <li><a>2차면접</a></li>
-          <li><a>채용완료</a></li>
-        </ul>
+      <p className="pt-2 subtitle">현재 진행 중인 전체 포지션을 보여줍니다.</p>
+      <div className="is-flex is-justify-content-space-between">
+        <div className="is-flex is-align-items-center">
+          <span className="icon is-clickable">
+            <IconArrowAll />
+          </span>
+        </div>
+        <div className="is-flex">
+          <div className="field mr-2">
+            <button className="button is-small" onClick={toggleModalPositionManage}>포지션생성</button>
+          </div>
+          <div className="field">
+            <div className="control has-icons-left">
+              <input type="text" className="input is-small is-inline" placeholder="Search..." />
+              <span className="icon is-small is-left">
+                <IconMagnify />
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="box">
+      {/* <div className="tabs"> */}
+        {/* <ul> */}
+          {/* <li className="is-active"><a>1차면접</a></li> */}
+          {/* <li><a>2차면접</a></li> */}
+          {/* <li><a>채용완료</a></li> */}
+        {/* </ul> */}
+      {/* </div> */}
+      <div>
         <div className="columns">
           <div className="column is-3">
             <PositionBox title="디자이너">
@@ -72,39 +234,12 @@ const PageDashboard = styled(({ className, ...props }: any) => {
           </div>
         </div>
       </div>
-      <div className="box">
-        <div className="columns">
-          <div className="column is-4">
-            <span className="tag is-large title">서유리</span>
-            <div>email: aaa@gmail.com</div>
-            <div>tel: 010-1234-1234</div>
-            <div><label className="label is-inline-block mb-0">면접일: </label><span>2022-01-01</span></div>
-            <div><label className="label is-inline-block mb-0">면접관: </label><span>aaa, bbb</span></div>
-            <div><label className="label is-inline-block mb-0">이력서: </label><span>abcd.pdf</span></div>
-          </div>
-          <div className="column is-4">
-            <div><label className="label is-inline-block mb-0">면접요청일자: </label><span></span></div>
-            <div>
-              <label className="label is-inline-block mb-0">면접현황: </label>
-              <div className="select is-small">
-                <select>
-                  <option>1차 면접 중</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="column is-4">
-            <div className="box p-1 has-background-grey-lighter">
-              <label className="label">Memo</label>
-              <textarea className="textarea has-fixed-size" style={{ background: 'transparent' }}></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ModalPositionManage show={showModalPositionManage} form={form} updateForm={updateForm} close={toggleModalPositionManage} />
     </main>
   )
 })`
-  height: calc(100vh - 56px);
+  height: calc(100vh - 52px);
+  position: relative;
   overflow-x: hidden;
   overflow-y: auto;
 `
