@@ -1,16 +1,18 @@
-import styled from 'styled-components'
-import titleLogo from '/src/assets/title-logo.png'
 import { Component } from 'react'
+import { Navigate } from 'react-router-dom'
+import styled from 'styled-components'
+import Logo from '/src/assets/logo-light.png'
+import TitleLight from '/src/assets/title-light.png'
+import { cond } from 'lodash/fp'
 import Wrapper from '/src/components/Wrapper'
 import { getGoogleUserInfo, googleLogin } from '/src/components/GoogleAuthentication'
-import { Navigate } from 'react-router-dom'
 import { setUserInfo, UserInfo } from '/src/components/storage'
-import { cond } from 'lodash/fp'
+import withDocumentTitle from '/src/hooks/withDocumentTitle'
 
 const TitleBox = styled((props) => {
   return (
     <div {...props}>
-      <img src="https://via.placeholder.com/72x72" className="pb-3" />
+      <img src={Logo} className="pb-3" />
       <h1 className="title pb-3">반갑습니다</h1>
       <p className="subtitle">아이디와 비밀번호를 입력해주세요.</p>
     </div>
@@ -44,7 +46,7 @@ const LoginButtonBox = styled(({ className, handleLogin, ...props }: { className
   return (
     <div className={`box p-5 ${className}`} {...props}>
       <div className="pt-2 pb-2">
-        <img src={titleLogo} />
+        <img src={TitleLight} />
       </div>
       <div className="button-wrap">
         <input type="text" className="input is-fullwidth my-2" placeholder="Email" disabled={true} />
@@ -87,6 +89,8 @@ export default class Login extends Component<{}, ComponentState> {
     this.state = {
       logined: false /* FIXME: 임시 */
     }
+    const documentTitle = withDocumentTitle()
+    documentTitle.updateTitle('로그인')
   }
   get authenticated() {
     return !!this.state.authenticateInfo?.email

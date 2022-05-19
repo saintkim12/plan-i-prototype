@@ -1,10 +1,12 @@
 import 'bulma'
+import 'sweetalert2/src/sweetalert2.scss'
 import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
+import withDocumentTitle from '/src/hooks/withDocumentTitle'
 import Main from '/src/routes/Main'
-import { initToken } from './store/token'
-import { useAppDispatch, useAppSelector } from '/src/store'
+import { initToken } from '/src/store/token'
+import { useAppDispatch } from '/src/store'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -15,7 +17,7 @@ const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
   }
   #root {
-    /* overflow-y: auto; */
+    overflow-y: auto;
   }
 `
 
@@ -26,11 +28,17 @@ export default function App() {
   const Dashboard = lazy(() => import('/src/routes/Dashboard'))
   const Schedule = lazy(() => import('/src/routes/Schedule'))
   const Chat = lazy(() => import('/src/routes/Chat'))
+
+  const ApplicantMain = lazy(() => import('/src/routes/ApplicantMain'))
+
   const LoginPopup = lazy(() => import('/src/routes/LoginPopup'))
 
+  const documentTitle = withDocumentTitle()
   /* Redux state 초기화 */
   const dispatch = useAppDispatch()
   useEffect(() => {
+    /* Title 설정 */
+    documentTitle.setBaseTitle()
     /* Google Token 정보 초기화 */
     dispatch((initToken()))
   }, [])
@@ -41,11 +49,17 @@ export default function App() {
         {/* <Suspense fallback={<div>Loading...</div>}> */}
         <Suspense>
           <Routes>
+            {/* admin */}
             <Route path='/' element={<Main />} />
             <Route path='/login' element={<Login />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/schedule' element={<Schedule />} />
             <Route path='/chat' element={<Chat />} />
+            {/* interviewer */}
+            
+            {/* applicant */}
+            <Route path='/applicant' element={<ApplicantMain />} />
+
             {/* hidden pages */}
             <Route path='/popup/login' element={<LoginPopup />} />
             {/* hidden pages */}

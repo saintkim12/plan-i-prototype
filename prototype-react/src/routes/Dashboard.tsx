@@ -1,13 +1,14 @@
+import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import NavBar from '/src/components/NavBar'
 import LnbMenu from '/src/components/LnbMenu'
 import { Wrapper } from '/src/components/Wrapper'
+import withDocumentTitle from '/src/hooks/withDocumentTitle'
 import IconMagnify from '~icons/mdi/magnify'
 import IconArrowAll from '~icons/mdi/arrow-all'
 import IconCog from '~icons/mdi/cog'
 import IconAndroid from '~icons/mdi/android'
 import IconMenuDown from '~icons/mdi/menu-down'
-import { useCallback, useState } from 'react'
 
 const InsideModal = styled(({ show = false, children, ...props }: { show?: boolean, children: any }) => {
   const style = {
@@ -247,6 +248,8 @@ const PageDashboard = styled(({ className, ...props }: any) => {
 interface ComponentProps {}
 
 export default function Dashboard(props: ComponentProps) {
+  const documentTitle = withDocumentTitle()
+  documentTitle.updateTitle('대시보드')
   return (
     <Wrapper className="is-flex is-justify-content-flex-start" style={{ height: 'inherit' }}>
       <LnbMenu />

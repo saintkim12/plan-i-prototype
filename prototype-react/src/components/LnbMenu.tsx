@@ -1,6 +1,7 @@
-import styled from 'styled-components'
-import LogoDark from '/src/assets/title-logo-dark.png'
 import { useLocation, useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
+import Logo from '/src/assets/logo-dark.png'
+import TitleDark from '/src/assets/title-dark.png'
 import IconMenu from '~icons/mdi/menu'
 import IconCardPlusOutline from '~icons/mdi/card-plus-outline'
 import IconFlag from '~icons/mdi/flag'
@@ -27,8 +28,8 @@ const BaseLnbMenu = styled(({ className, ...props }: any) => {
         onClick={() => navigate('/')}
       >
         {/* <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28" /> */}
-        <img src="https://via.placeholder.com/36" className="" />
-        <img src={LogoDark} className="" style={{ height: '1.2em', margin: 'auto .8rem' }} />
+        <img src={Logo} className="" width="32" height="32" />
+        <img src={TitleDark} className="" style={{ height: '1.2em', margin: 'auto .8rem' }} />
       </a>
       <nav className="menu">
         <ul className="menu-list">
