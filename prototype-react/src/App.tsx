@@ -7,6 +7,7 @@ import withDocumentTitle from '/src/hooks/withDocumentTitle'
 import Main from '/src/routes/Main'
 import { initToken } from '/src/store/token'
 import { useAppDispatch } from '/src/store'
+import DemoMain from '/src/routes/DemoMain'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -29,6 +30,8 @@ export default function App() {
   const Schedule = lazy(() => import('/src/routes/Schedule'))
   const Chat = lazy(() => import('/src/routes/Chat'))
 
+  const InterviewerMain = lazy(() => import('/src/routes/InterviewerMain'))
+
   const ApplicantMain = lazy(() => import('/src/routes/ApplicantMain'))
 
   const LoginPopup = lazy(() => import('/src/routes/LoginPopup'))
@@ -49,13 +52,19 @@ export default function App() {
         {/* <Suspense fallback={<div>Loading...</div>}> */}
         <Suspense>
           <Routes>
+            {/* FIXME: 데모에서만 사용할 메인 */}
+            <Route path='/' element={<DemoMain />} />
+            
             {/* admin */}
-            <Route path='/' element={<Main />} />
+            {/* <Route path='/' element={<Main />} /> */}
+            <Route path='/main' element={<Main />} />
+
             <Route path='/login' element={<Login />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/schedule' element={<Schedule />} />
             <Route path='/chat' element={<Chat />} />
             {/* interviewer */}
+            <Route path='/interviewer' element={<InterviewerMain />} />
             
             {/* applicant */}
             <Route path='/applicant' element={<ApplicantMain />} />

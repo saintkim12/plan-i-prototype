@@ -1,9 +1,7 @@
-import styled from 'styled-components'
 import { StyledWrapper } from '/src/components/Wrapper'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import LogoLight from '/src/assets/logo-light.png'
-import TitleLight from '/src/assets/title-light.png'
+import TitleLogo from '/src/components/TitleLogo'
 import IconMagnify from '~icons/mdi/magnify'
 import IconArrowAll from '~icons/mdi/arrow-all'
 import IconAndroid from '~icons/mdi/android'
@@ -57,10 +55,7 @@ export default function ApplicantMain() {
     <Wrapper className="container is-fluid pt-1">
       <div className="columns" style={{ height: 'inherit' }}>
         <div className="column is-3">
-          <div className="mt-5 py-3">
-            <img src={LogoLight} />
-            <img src={TitleLight} />
-          </div>
+          <TitleLogo className="mt-5 py-3" />
           <div className="py-3">
             <p className="subtitle">홍길동님 반갑습니다. </p>
             <p className="subtitle is-size-6">PLANIN과의 면접 과정이 서로에게 유익한 시간으로 남기를 바랍니다.</p>

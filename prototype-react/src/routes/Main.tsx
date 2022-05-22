@@ -18,7 +18,7 @@ export default function Main(props: ComponentProps) {
   }, [token])
   return cond([
     [() => !loaded, () => <></>],
-    [() => isTokenValid, () => <Navigate to="/dashboard" />],
-    [() => !isTokenValid, () => <Navigate to="/login" />],
+    [() => isTokenValid, () => <Navigate to="/dashboard" replace={true} />],
+    [() => !isTokenValid, () => <Navigate to="/login" replace={true} />],
   ])()
 }
