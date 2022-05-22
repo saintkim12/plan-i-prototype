@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import withReactContent from 'sweetalert2-react-content'
 import Swal from 'sweetalert2'
+import { isEqual } from 'lodash/fp'
 import TitleLogo from '/src/components/TitleLogo'
 import { StyledWrapper } from '/src/components/Wrapper'
 import ToggleSwitch from '/src/components/ToggleSwitch'
+import InterviewCalender from '/src/components/InterviewCalender'
 import IconSquareRoundedOutline from '~icons/mdi/square-rounded-outline'
 import IconSquareRounded from '~icons/mdi/square-rounded'
-import { isEqual } from 'lodash/fp'
 
 const Wrapper = StyledWrapper`
   background-color: #fff;
@@ -88,58 +89,7 @@ export default function InterviewerMain() {
           </div>
         </div>
         <div className="column is-9 is-relative">
-          {/* <div className="tabs mt-5"> */}
-            {/* <ul> */}
-              {/* <li className="is-active"><a>면접일정 선택</a></li> */}
-              {/* <li><a>면접정보</a></li> */}
-              {/* <li><a>면접후기</a></li> */}
-            {/* </ul> */}
-          {/* </div> */}
-          {/* <div className="is-flex is-justify-content-flex-end"> */}
-            {/* <button className="button is-small">Create Contents</button> */}
-            {/* <button className="button is-small is-success">Create Placement</button> */}
-          {/* </div> */}
-          {/* <hr /> */}
-          {/* <div className="is-flex is-justify-content-space-between"> */}
-            {/* <div className="is-flex is-align-items-center"> */}
-              {/* <span className="icon is-clickable"> */}                {/* <IconArrowAll /> */}{/* </span> */}
-              <span>{/* <span> */}</span>
-                {/* 원하는 면접일을 선택해주세요. 빠르게 선택할 수록 좋습니다. */}
-              {/* </span> */}
-            {/* </div> */}
-            {/* <div className="is-flex"> */}
-              {/* <div className="field"> */}
-                {/* <div className="control has-icons-left"> */}
-                  {/* <input type="text" className="input is-small is-inline" placeholder="Search..." /> */}
-                  {/* <span className="icon is-small is-left"> */}                    {/* <IconMagnify /> */}{/* </span> */}
-                <span>{/* </div> */}</span>
-              {/* </div> */}
-              {/* <div className="field"> */}
-                {/* <button className="button is-small px-1 is-dark">All</button> */}
-                {/* <button className="button is-small px-1"><IconAndroid /></button> */}
-                {/* <button className="button is-small px-1"><IconApple /></button> */}
-              {/* </div> */}
-            {/* </div> */}
-          {/* </div> */}
-          {/* <div className="columns"> */}
-            {/* <DateBox title={'5/9 (월)'}> */}
-              {/* <TimeItem selected={true}>오전 11시 ~ 12시</TimeItem> */}
-              {/* <TimeItem selected={false}>오후 5시 ~ 6시</TimeItem> */}
-            {/* </DateBox> */}
-            {/* <DateBox title={'5/10 (화)'}> */}
-              {/* <TimeItem selected={false}>오후 1시 ~ 2시</TimeItem> */}
-            {/* </DateBox> */}
-            {/* <DateBox title={'5/11 (수)'}> */}
-              {/* <TimeItem selected={false}>오전 10시 ~ 11시</TimeItem> */}
-              {/* <TimeItem selected={false}>오전 11시 ~ 12시</TimeItem> */}
-            {/* </DateBox> */}
-            {/* <DateBox title={'5/11 (목)'}> */}
-              {/* <TimeItem selected={false}>오후 2시 ~ 3시</TimeItem> */}
-            {/* </DateBox> */}
-            {/* <DateBox title={'5/12 (금)'}> */}
-              {/* <TimeItem selected={false}>오후 3시 ~ 4시</TimeItem> */}
-            {/* </DateBox> */}
-          {/* </div> */}
+          <InterviewCalender />
           <div className="is-flex is-justify-content-flex-end" style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
             <button className="button is-dark" onClick={onHandleSubmit}>제출하기</button>
           </div>
