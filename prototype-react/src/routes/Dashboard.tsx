@@ -1,5 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
+import { useAppSelector } from '/src/store'
 import NavBar from '/src/components/NavBar'
 import LnbMenu from '/src/components/LnbMenu'
 import { Wrapper } from '/src/components/Wrapper'
@@ -248,9 +250,19 @@ const PageDashboard = styled(({ className, ...props }: any) => {
 interface ComponentProps {}
 
 export default function Dashboard(props: ComponentProps) {
+  const navigate = useNavigate()
   const documentTitle = withDocumentTitle()
   documentTitle.updateTitle('대시보드')
-  return (
+
+  /* 최초 접근 시 로그인 정보가 없으면 로그인 페이지로 redirect 처리 */
+  // const token = useAppSelector(state => state?.token?.token)
+  const loaded = useAppSelector(state => state?.token?.loaded)
+  const isTokenValid = useAppSelector(state => state?.token?.valid ?? false)
+  useEffect(() => {
+    if (loaded && !isTokenValid) navigate('/login', { replace: true })
+  }, [loaded])
+
+  return !isTokenValid ? <></> : (
     <Wrapper className="is-flex is-justify-content-flex-start" style={{ height: 'inherit' }}>
       <LnbMenu />
       <div style={{ flexGrow: 1, height: '100%' }}>

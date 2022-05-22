@@ -1,5 +1,5 @@
-import { Component } from 'react'
-import { Navigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import Logo from '/src/assets/logo-light.png'
 import TitleLight from '/src/assets/title-light.png'
@@ -8,6 +8,8 @@ import Wrapper from '/src/components/Wrapper'
 import { getGoogleUserInfo, googleLogin } from '/src/components/GoogleAuthentication'
 import { setUserInfo, UserInfo } from '/src/components/storage'
 import withDocumentTitle from '/src/hooks/withDocumentTitle'
+import { useAppDispatch } from '/src/store'
+import { initToken } from '/src/store/token'
 
 const TitleBox = styled((props) => {
   return (
@@ -30,7 +32,7 @@ const SuccessButton = styled(({ className, children, ...props }) => {
   return (<DefaultButton className={`${className} is-success`} {...props}>{children}</DefaultButton>)
 })``
 
-const LoginButtonBox = styled(({ className, handleLogin, ...props }: { className?: string, handleLogin: (userInfo: UserInfo) => void }) => {
+const LoginButtonBox = styled(({ className, handleLogin, ...props }: { className?: string, handleLogin: (userInfo: UserInfo) => Promise<any> }) => {
   const loginType = 'google'
   const onHandleGoogleLogin = async () => {
     await googleLogin()
@@ -82,69 +84,67 @@ interface ComponentState {
   logined: boolean
   authenticateInfo?: UserInfo
 }
-export default class Login extends Component<{}, ComponentState> {
-  constructor(props: {}) {
-    super(props)
-    // this.handleLogin = this.handleLogin.bind(this)
-    this.state = {
-      logined: false /* FIXME: 임시 */
-    }
-    const documentTitle = withDocumentTitle()
-    documentTitle.updateTitle('로그인')
-  }
-  get authenticated() {
-    return !!this.state.authenticateInfo?.email
-  }
-  async handleLogin(userInfo: UserInfo) {
+export default function Login() {
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
+  const [logined, setLogined] = useState<ComponentState['logined']>(false/* FIXME: 임시 */)
+  const [authenticateInfo, setAuthenticateInfo] = useState<ComponentState['authenticateInfo']>(undefined/* FIXME: 임시 */)
+  const documentTitle = withDocumentTitle()
+  documentTitle.updateTitle('로그인')
+  const authenticated = useMemo(() => !!authenticateInfo?.email, [authenticateInfo])
+  const handleLogin = async (userInfo: UserInfo) => {
     console.log('userInfo', userInfo)
-    await setUserInfo(userInfo)
+    await Promise.all([
+      setUserInfo(userInfo),
+      dispatch((initToken())),
+    ])
     // this.setState(state => ({ ...state, authenticateInfo: userInfo }))
     // this.setState(state => ({ ...state, logined: true }))
-    this.setState(state => ({ ...state, authenticateInfo: userInfo, logined: true }))
+    setAuthenticateInfo(userInfo)
+    setLogined(true)
   }
-  render() {
-    /* FIXME: 임시 */
-    const redirectTo = '/dashboard'
-    return cond([
-      [() => this.state.logined, () => <Navigate to={redirectTo} />],
-      // [() => this.authenticated, (info: ComponentState['authenticateInfo']) => (
-      //   <Wrapper className="container is-fluid">
-      //     <TitleBox />
-      //     <div className="box p-5">
-      //       <div className="is-flex is-justify-content-center mb-3">
-      //         <figure className="image is-128x128">
-      //           <img className="is-rounded" src={info?.imgSrc ?? 'https://bulma.io/images/placeholders/128x128.png'} />
-      //         </figure>
-      //       </div>
-      //       <p>반갑습니다. {info?.username} 님!</p>
-      //       <p>해당 계정으로 로그인을 진행할까요?</p>
-      //       <div className="is-size-6">
-      //         <p><label>유형</label>: {info?.type}</p>
-      //         <p><label>사용자</label>: {info?.username}</p>
-      //         <p><label>이메일</label>: {info?.email}</p>
-      //       </div>
-      //     </div>
-      //   </Wrapper>
-      // )],
-      [() => true, () => (
-        <Wrapper className="container is-fluid">
-          <TitleBox />
-          <LoginButtonBox handleLogin={this.handleLogin.bind(this)} />
-          {/* <Logo /> */}
-          {/* <div className="columns is-mobile is-multiline"> */}
-            {/* <div className="column is-full"> */}
-              {/* <LinkButton to="/login">Sign in</LinkButton> */}
-            {/* </div> */}
-            {/* <div className="column is-full"> */}
-              {/* <LinkButton to="/schedule">캘린더</LinkButton> */}
-            {/* </div> */}
-            {/* <div className="column is-full"> */}
-              {/* <LinkButton to="/chat">채팅</LinkButton> */}
-            {/* </div> */}
-          {/* </div> */}
-        </Wrapper>
-      )],
-    // ])(this.state.authenticateInfo)
-    ])()
-  }
+
+  /* FIXME: 임시 */
+  const redirectTo = '/dashboard'
+  useEffect(() => {
+    if (logined) navigate(redirectTo, { replace: true })
+  }, [logined])
+  // [() => authenticated, (info: ComponentState['authenticateInfo']) => (
+  //   <Wrapper className="container is-fluid">
+  //     <TitleBox />
+  //     <div className="box p-5">
+  //       <div className="is-flex is-justify-content-center mb-3">
+  //         <figure className="image is-128x128">
+  //           <img className="is-rounded" src={info?.imgSrc ?? 'https://bulma.io/images/placeholders/128x128.png'} />
+  //         </figure>
+  //       </div>
+  //       <p>반갑습니다. {info?.username} 님!</p>
+  //       <p>해당 계정으로 로그인을 진행할까요?</p>
+  //       <div className="is-size-6">
+  //         <p><label>유형</label>: {info?.type}</p>
+  //         <p><label>사용자</label>: {info?.username}</p>
+  //         <p><label>이메일</label>: {info?.email}</p>
+  //       </div>
+  //     </div>
+  //   </Wrapper>
+  // )],
+  return (
+    <Wrapper className="container is-fluid">
+      <TitleBox />
+      <LoginButtonBox handleLogin={handleLogin} />
+      {/* <Logo /> */}
+      {/* <div className="columns is-mobile is-multiline"> */}
+        {/* <div className="column is-full"> */}
+          {/* <LinkButton to="/login">Sign in</LinkButton> */}
+        {/* </div> */}
+        {/* <div className="column is-full"> */}
+          {/* <LinkButton to="/schedule">캘린더</LinkButton> */}
+        {/* </div> */}
+        {/* <div className="column is-full"> */}
+          {/* <LinkButton to="/chat">채팅</LinkButton> */}
+        {/* </div> */}
+      {/* </div> */}
+    </Wrapper>
+  )
 }

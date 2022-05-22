@@ -1,19 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { GoogleToken } from '/src/components/storage'
-import { getToken as asyncGetToken, removeToken as asyncRemoveToken } from '/src/components/GoogleAuthentication'
+import { getToken as asyncGetToken, isTokenValid, removeToken as asyncRemoveToken } from '/src/components/GoogleAuthentication'
 
 const getToken = createAsyncThunk('token/getToken', asyncGetToken)
 const removeToken = createAsyncThunk('token/removeToken', asyncRemoveToken)
 const initToken = createAsyncThunk('token/initToken', async () => {
   try {
     const token = await asyncGetToken()
-    if (token) {
-      const { accessToken, createdIn, expiresIn } = token
-      const valid = accessToken && Date.now() <= createdIn + expiresIn
-      // if (!valid) {}
-      console.log('token is', valid ? 'valid' : 'not valid')
-    }
-    console.log('initToken', token)
     return token
   } catch (e) {
     console.error(e)
@@ -26,13 +19,14 @@ const tokenSlice = createSlice({
   initialState: {
     token: <GoogleToken | null> null,
     loaded: false,
+    valid: false,
   },
   reducers: {
   },
   extraReducers: (builder) => {
-    builder.addCase(getToken.fulfilled, (state, action) => { Object.assign(state, { loaded: true, token: action.payload }) })
+    builder.addCase(getToken.fulfilled, (state, action) => { Object.assign(state, { loaded: true, token: action.payload, valid: isTokenValid(action.payload) }) })
     builder.addCase(removeToken.fulfilled, (state) => { Object.assign(state, { token: null }) })
-    builder.addCase(initToken.fulfilled, (state, action) => { Object.assign(state, { loaded: true, token: action.payload }) })
+    builder.addCase(initToken.fulfilled, (state, action) => { Object.assign(state, { loaded: true, token: action.payload, valid: isTokenValid(action.payload) }) })
   }
 })
 

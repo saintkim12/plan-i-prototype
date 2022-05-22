@@ -5,6 +5,13 @@ import { removeGoogleToken, getGoogleToken, GoogleOAuth2Token, GoogleToken, setG
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_API_KEY
 
+export function isTokenValid(token: GoogleToken | null) {
+  if (!token) return false
+  const { accessToken, createdIn, expiresIn } = token
+  const valid = accessToken && Date.now() <= createdIn + expiresIn
+  // console.log('token is', valid ? 'valid' : 'not valid')
+  return valid
+}
 export function getToken() {
   return getGoogleToken()
 }
