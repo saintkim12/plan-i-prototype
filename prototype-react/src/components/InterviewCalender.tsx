@@ -47,8 +47,9 @@ const StyledElement = styled.div`
         border-bottom: 1px solid #bbb;
         border-right: 1px solid #bbb;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: space-around;
       }
       display: grid;
       grid-template-columns: repeat(5, ${vars.weekWidth});
@@ -98,7 +99,7 @@ export default function InterviewCalender() {
   return (
     <StyledElement>
       <div className='header'>
-        <span>{targetDay.toFormat('yyyy년 MM월')}</span>
+        <span>{targetWeekFirstday.toFormat('yyyy년 MM월')}</span>
         <button className="prev" onClick={() => toPrevWeek()}>&lt;</button>
         <button className="next" onClick={() => toNextWeek()}>&gt;</button>
       </div>
@@ -111,7 +112,8 @@ export default function InterviewCalender() {
             .filter(dt => [1, 2, 3, 4, 5].includes(dt.weekday))
             .map((dt, key) => (
             <div key={`${key}`}>
-              <span>{dt.setLocale('ko').toFormat('dd일 (EEE)')}</span>
+              <p className="is-block title is-size-5 mb-0">{dt.setLocale('ko').toFormat('EEE')}</p>
+              <p className="is-block title is-size-4 mb-0">{dt.setLocale('ko').toFormat('dd')}</p>
             </div>
           ))}
         </div>
