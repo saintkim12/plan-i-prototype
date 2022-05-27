@@ -27,6 +27,6 @@ const CenteredWrapper = styled.div`
   ${parentCenter}
 `
 
-export { BaseWrapper as Wrapper }
+export const Wrapper = BaseWrapper
 export const StyledWrapper = styled(({ children, ...props }: any) => (<BaseWrapper {...props}>{children}</BaseWrapper>))
 export default CenteredWrapper

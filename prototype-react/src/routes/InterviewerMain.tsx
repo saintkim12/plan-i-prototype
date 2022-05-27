@@ -1,12 +1,11 @@
-import { useMemo, useState } from 'react'
+import isEqual from 'lodash/fp/isEqual'
 import styled from 'styled-components'
-import withReactContent from 'sweetalert2-react-content'
-import Swal from 'sweetalert2'
-import { isEqual } from 'lodash/fp'
+import { useMemo, useState } from 'react'
 import TitleLogo from '/src/components/TitleLogo'
 import { StyledWrapper } from '/src/components/Wrapper'
 import ToggleSwitch from '/src/components/ToggleSwitch'
 import InterviewCalender from '/src/components/InterviewCalender'
+import withSwal from '/src/hooks/withSwal'
 import IconSquareRoundedOutline from '~icons/mdi/square-rounded-outline'
 import IconSquareRounded from '~icons/mdi/square-rounded'
 
@@ -59,9 +58,9 @@ const InterviewerListBox = ({ checked, itemList, ...props }: { checked?: string[
 }
 
 export default function InterviewerMain() {
-  const MySwal = withReactContent(Swal)
+  const swal = withSwal()
   const onHandleSubmit = () => {
-    return MySwal.fire({
+    return swal.fire({
       text: '제출이 완료되었습니다.',
       icon: 'success',
     })

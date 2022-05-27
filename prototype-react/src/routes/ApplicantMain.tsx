@@ -1,7 +1,6 @@
 import { StyledWrapper } from '/src/components/Wrapper'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import TitleLogo from '/src/components/TitleLogo'
+import withSwal from '/src/hooks/withSwal'
 import IconMagnify from '~icons/mdi/magnify'
 import IconArrowAll from '~icons/mdi/arrow-all'
 import IconAndroid from '~icons/mdi/android'
@@ -44,9 +43,9 @@ const TimeItem = ({ selected, children, ...props }: { selected?: boolean, childr
 }
 
 export default function ApplicantMain() {
-  const MySwal = withReactContent(Swal)
+  const swal = withSwal()
   const onHandleSubmit = () => {
-    return MySwal.fire({
+    return swal.fire({
       text: '제출이 완료되었습니다.',
       icon: 'success',
     })

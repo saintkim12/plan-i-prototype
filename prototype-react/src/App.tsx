@@ -1,18 +1,18 @@
 import 'bulma'
-import 'sweetalert2/src/sweetalert2.scss'
 import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
 import withDocumentTitle from '/src/hooks/withDocumentTitle'
-import Main from '/src/routes/Main'
 import { initToken } from '/src/store/token'
 import { useAppDispatch } from '/src/store'
+import Main from '/src/routes/Main'
 import DemoMain from '/src/routes/DemoMain'
+import PageNotFound from '/src/routes/PageNotFound'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
-    overflow-y: hidden;
     overflow-x: hidden;
+    overflow-y: hidden;
   }
   body {
     min-height: 100vh;
@@ -37,6 +37,7 @@ export default function App() {
   const LoginPopup = lazy(() => import('/src/routes/LoginPopup'))
 
   const documentTitle = withDocumentTitle()
+
   /* Redux state 초기화 */
   const dispatch = useAppDispatch()
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function App() {
     /* Google Token 정보 초기화 */
     dispatch((initToken()))
   }, [])
+  
   return (
     <>
       <GlobalStyle />
@@ -71,14 +73,10 @@ export default function App() {
 
             {/* hidden pages */}
             <Route path='/popup/login' element={<LoginPopup />} />
-            {/* hidden pages */}
+            {/* Other pages */}
             <Route
               path='*'
-              element={
-                <main style={{ padding: '1rem' }}>
-                  <p>There's nothing here!</p>
-                </main>
-              }
+              element={<PageNotFound />}
             />
           </Routes>
         </Suspense>
