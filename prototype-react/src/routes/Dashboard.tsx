@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '/src/store'
 import NavBar from '/src/components/NavBar'
 import LnbMenu from '/src/components/LnbMenu'
-import { Wrapper } from '/src/components/Wrapper'
+import { StyledWrapper } from '/src/components/Wrapper'
 import withDocumentTitle from '/src/hooks/withDocumentTitle'
 import IconMagnify from '~icons/mdi/magnify'
 import IconArrowAll from '~icons/mdi/arrow-all'
@@ -12,25 +12,13 @@ import IconCog from '~icons/mdi/cog'
 import IconAndroid from '~icons/mdi/android'
 import IconMenuDown from '~icons/mdi/menu-down'
 
-const InsideModal = styled(({ show = false, children, ...props }: { show?: boolean, children: any }) => {
-  const style = {
-    ...(show !== true) && { display: 'none' }
-  }
-  return (
-    <div className="inside-modal" style={style} {...props}>
-      <div className="is-overlay"></div>
-      <div className="modal-content">
-        <div className="card">
-          <div className="card-content">
-            <div className="content">{ children }</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-})`
+/* styled component */
+const Wrapper = StyledWrapper`
   height: inherit;
-  display: flex;
+`
+const InsideModalWrapper = styled.div<InsideModalProps>`
+  height: inherit;
+  display: ${props => props.show ? 'flex' : 'none'};
   align-items: center;
   position: absolute;
   top: 0;
@@ -42,7 +30,43 @@ const InsideModal = styled(({ show = false, children, ...props }: { show?: boole
     background: #bbbbbb88;
   }
 `
-const ModalPositionManage = ({ show, form, updateForm, close }: { show?: boolean, form: any, updateForm: (key: string, value: any) => void, close: () => void }) => {
+const PageWrapper = styled.div`
+ flex-grow: 1;
+ height: 100%;
+`
+const ContentWrapper = styled.main`
+  height: calc(100vh - 52px);
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.5rem;
+`
+
+/* react component */
+type InsideModalProps = { show?: boolean, children?: any }
+/**
+ * 공통 Modal
+ */
+const InsideModal = ({ show = false, children }: InsideModalProps) => {
+  return (
+    <InsideModalWrapper show={show}>
+      <div className="is-overlay"></div>
+      <div className="modal-content">
+        <div className="card">
+          <div className="card-content">
+            <div className="content">{ children }</div>
+          </div>
+        </div>
+      </div>
+    </InsideModalWrapper>
+  )
+}
+
+/**
+ * PositionManage Modal
+ */
+type ModalPositionManageProps = { show?: boolean, form: any, updateForm: (key: string, value: any) => void, close: () => void }
+const ModalPositionManage = ({ show, form, updateForm, close }: ModalPositionManageProps) => {
   return (
     <InsideModal show={show}>
       <div className="field">
@@ -105,56 +129,66 @@ const ModalPositionManage = ({ show, form, updateForm, close }: { show?: boolean
   )
 }
 
-const PageDashboard = styled(({ className, ...props }: any) => {
-  const PositionBox = ({ title, children }: { title: string, children: any }) => (
-    <article className="message">
-      <div className="message-header">
-        <p>{ title }</p>
-        {/* <button className="delete" aria-label="delete"></button> */}
-        <span className="icon is-small is-clickable"><IconCog /></span>
-      </div>
-      <div className="message-body px-2 py-2">
-        { children }
-      </div>
-    </article>
-  )
-  type ApplicantItemProps = { id: string, selected?: boolean, name: string, email: string, tel: string, icon?: React.ReactElement }
-  const ApplicantItem = ({ selected, name, email, tel, ...props }: ApplicantItemProps) => {
-    const NameWrapper = ({ children }: { children: any }) => (<div className="is-flex is-align-items-center is-justify-content-space-between">{ children }</div>)
-    return (
-      <div className={`card is-clickable p-3 my-2 ${selected ? 'has-background-link has-text-white' : ''}`}>
-        <article className="media">
-          <div className="media-content">
-            <div className="content">
-              <NameWrapper>
-                <div>
-                  <span className="icon is-small mr-2">
-                    { props.icon ? props.icon : <IconAndroid className="has-text-primary" /> }
-                  </span>
-                  <strong>{ name }</strong>
-                </div>
-                <div>
-                  <IconMenuDown />
-                </div>
-              </NameWrapper>
-              <div className="is-flex is-justify-content-space-between">
-                <div>
-                  <div>{ email }</div>
-                  <div>{ tel }</div>
-                </div>
-                <div className="is-fullheight">
-                  <button className="is-block button is-primary is-small" style={{ height: '100%' }}>
-                    <span className="is-block">05/19</span>
-                    <span className="is-block">14:00</span>
-                  </button>
-                </div>
+/**
+ * PositionBox Component
+ */
+const PositionBox = ({ title, children }: { title: string, children: any }) => (
+  <article className="message">
+    <div className="message-header">
+      <p>{ title }</p>
+      {/* <button className="delete" aria-label="delete"></button> */}
+      <span className="icon is-small is-clickable"><IconCog /></span>
+    </div>
+    <div className="message-body px-2 py-2">
+      { children }
+    </div>
+  </article>
+)
+
+/**
+ * ApplicantItem Component
+ */
+type ApplicantItemProps = { id: string, selected?: boolean, name: string, email: string, tel: string, icon?: React.ReactElement }
+const ApplicantItem = ({ selected, name, email, tel, ...props }: ApplicantItemProps) => {
+  const NameWrapper = ({ children }: { children: any }) => (<div className="is-flex is-align-items-center is-justify-content-space-between">{ children }</div>)
+  return (
+    <div className={`card is-clickable p-3 my-2 ${selected ? 'has-background-link has-text-white' : ''}`}>
+      <article className="media">
+        <div className="media-content">
+          <div className="content">
+            <NameWrapper>
+              <div>
+                <span className="icon is-small mr-2">
+                  { props.icon ? props.icon : <IconAndroid className="has-text-primary" /> }
+                </span>
+                <strong>{ name }</strong>
+              </div>
+              <div>
+                <IconMenuDown />
+              </div>
+            </NameWrapper>
+            <div className="is-flex is-justify-content-space-between">
+              <div>
+                <div>{ email }</div>
+                <div>{ tel }</div>
+              </div>
+              <div className="is-fullheight">
+                <button className="is-block button is-primary is-small" style={{ height: '100%' }}>
+                  <span className="is-block">05/19</span>
+                  <span className="is-block">14:00</span>
+                </button>
               </div>
             </div>
           </div>
-        </article>
-      </div>
-    )
-  }
+        </div>
+      </article>
+    </div>
+  )
+}
+/**
+ * Dashboard Contents 컴포넌트
+ */
+const PageDashboard = () => {
 
   /* modal 보이기, 감추기 처리 */
   const [showModalPositionManage, setShowModalPositionManage] = useState(false)
@@ -176,7 +210,7 @@ const PageDashboard = styled(({ className, ...props }: any) => {
   }
 
   return (
-    <main className={`p-2 ${className}`} {...props}>
+    <ContentWrapper>
       <p className="pt-2 subtitle">현재 진행 중인 전체 포지션을 보여줍니다.</p>
       <div className="is-flex is-justify-content-space-between">
         <div className="is-flex is-align-items-center">
@@ -238,19 +272,16 @@ const PageDashboard = styled(({ className, ...props }: any) => {
         </div>
       </div>
       <ModalPositionManage show={showModalPositionManage} form={form} updateForm={updateForm} close={toggleModalPositionManage} />
-    </main>
+    </ContentWrapper>
   )
-})`
-  height: calc(100vh - 52px);
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
-`
+}
 
 interface ComponentProps {}
 
 export default function Dashboard(props: ComponentProps) {
   const navigate = useNavigate()
+  
+  /* document title 설정 */
   const documentTitle = withDocumentTitle()
   documentTitle.updateTitle('대시보드')
 
@@ -263,12 +294,12 @@ export default function Dashboard(props: ComponentProps) {
   }, [loaded])
 
   return !isTokenValid ? <></> : (
-    <Wrapper className="is-flex is-justify-content-flex-start" style={{ height: 'inherit' }}>
+    <Wrapper className="is-flex is-justify-content-flex-start">
       <LnbMenu />
-      <div style={{ flexGrow: 1, height: '100%' }}>
+      <PageWrapper>
         <NavBar />
         <PageDashboard />
-      </div>
+      </PageWrapper>
     </Wrapper>
   )
 }

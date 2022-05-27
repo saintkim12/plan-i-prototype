@@ -9,6 +9,7 @@ import { initToken } from '/src/store/token'
 import { getGoogleUserInfo, googleLogin } from '/src/components/GoogleAuthentication'
 import { setUserInfo, UserInfo } from '/src/components/storage'
 
+/* styled component */
 /**
  * 상단 텍스트 구역
  */
@@ -49,6 +50,7 @@ const SuccessButton = ({ className, children, ...props }: any) => {
   return (<DefaultButton className={`${className} is-success`} {...props}>{children}</DefaultButton>)
 }
 
+/* react component */
 /**
  * @returns 로그인 박스 컴포넌트
  */

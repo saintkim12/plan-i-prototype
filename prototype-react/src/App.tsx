@@ -9,6 +9,7 @@ import Main from '/src/routes/Main'
 import DemoMain from '/src/routes/DemoMain'
 import PageNotFound from '/src/routes/PageNotFound'
 
+/* styled component */
 const GlobalStyle = createGlobalStyle`
   html, body {
     overflow-x: hidden;
@@ -22,6 +23,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
+/* react component */
 // HMR을 위해 App은 functional 구조로 작성되어야 함
 // https://github.com/vitejs/vite/issues/1747
 export default function App() {
