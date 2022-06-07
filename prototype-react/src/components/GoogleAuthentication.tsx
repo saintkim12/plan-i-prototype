@@ -95,6 +95,24 @@ export function googleLogin() {
   })
 }
 
+export function fakeGoogleLogin() {
+  return removeToken()
+    .then(() => new Promise((resolve, reject) => {
+      const paramToToken = {
+        accessToken: 'FAKE_TOKEN' as any,
+        tokenType: 'Bearer' as any,
+        expiresIn: (Date.now() + 3600000 /* 1시간 */) / 1000,
+        scope: 'FAKE_SCOPE' as any,
+        createdIn: Date.now(),
+      }
+      // window.history.replaceState(null, '', window.location.pathname)
+      setGoogleToken(paramToToken).then(() => window.setTimeout(() => resolve(true), 500))
+    })
+  ).finally(() => {
+    console.log('fake google login')
+  })
+}
+
 /**
  * user
  */

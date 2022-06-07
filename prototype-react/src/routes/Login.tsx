@@ -6,7 +6,7 @@ import Wrapper from '/src/components/Wrapper'
 import withDocumentTitle from '/src/hooks/withDocumentTitle'
 import { useAppDispatch } from '/src/store'
 import { initToken } from '/src/store/token'
-import { getGoogleUserInfo, googleLogin } from '/src/components/GoogleAuthentication'
+import { fakeGoogleLogin, getGoogleUserInfo, googleLogin } from '/src/components/GoogleAuthentication'
 import { setUserInfo, UserInfo } from '/src/components/storage'
 
 /* styled component */
@@ -73,13 +73,32 @@ const LoginBox = ({ onHandleLogin }: { onHandleLogin: (userInfo: UserInfo) => Pr
       imgSrc: userInfo?.picture,
     })
   }
+  // FIXME: fake login
+  const onHandleFakeLogin = async () => {
+    await fakeGoogleLogin()
+    // 가짜 로그인 정보 생성
+    const userInfo = {
+      id: 'test',
+      name: 'test',
+      email: 'test@test.com',
+      picture: '',
+    }
+    // 로그인 후 이벤트 처리
+    onHandleLogin({
+      type: loginType,
+      id: userInfo?.id,
+      username: userInfo?.name,
+      email: userInfo?.email,
+      imgSrc: userInfo?.picture,
+    })
+  }
   return (
     <LoginBoxWrapper className={`box p-5`}>
       <Title className="pt-2 pb-2" />
       <LoginButtonWrapper>
         <input type="text" className="input is-fullwidth my-2" placeholder="Email" disabled={true} />
         <input type="password" className="input is-fullwidth my-2" placeholder="Password" disabled={true} />
-        <SuccessButton disabled={true}>로그인</SuccessButton>
+        <SuccessButton onClick={onHandleFakeLogin}>로그인</SuccessButton>
         <DefaultButton disabled={true}>회원가입</DefaultButton>
         <hr />
         <SuccessButton onClick={onHandleGoogleLogin}>Google로 로그인</SuccessButton>
