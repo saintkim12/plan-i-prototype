@@ -1,19 +1,20 @@
 # plan-i-prototype
-(\[Demo\])[https://saintkim12.github.io/plan-i-prototype]
+- [Demo](https://saintkim12.github.io/plan-i-prototype)
+- [Github\(This page\)](https://github.com/saintkim12/plan-i-prototype)
 
 ## 이게 뭐야?
 - 개발중이었던 모 사이트의 프로토타입 페이지입니다.
 - 일부 퍼블리싱만 되어 있고, 대부분의 기능이 구현되어 있지 않습니다만, React/GoogleApi 등 기능 메모용으로 남겨둡니다.
 
 ## 개발 언어 및 사용 기술은?
-- [React 18](https://reactjs.org), [KO](https://ko.reactjs.org)
+- [React 18](https://reactjs.org), ([KO](https://ko.reactjs.org))
 - Typescript
 - Redux
 - [Styled Component](https://styled-components.com)
 - [Vitejs](https://vitejs.dev)
 - Google API(OAuth 2.0 Authentication, Calendar 등)
 - [bulma](https://bulma.io)
-- 그 외는 (package.json)[./prototype-react/package.json] 참고
+- 그 외는 [package.json](./prototype-react/package.json) 참고
 
 ## 그 외 참고사항은?
 - 대부분 API Call 방식으로 작동하도록 설계되었습니다(프로토타입이라서).
